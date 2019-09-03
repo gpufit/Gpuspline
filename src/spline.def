@@ -1,0 +1,21 @@
+LIBRARY	      "splines"
+EXPORTS       
+    calculate_coefficients_1d @1
+    calculate_coefficients_2d @2
+    calculate_coefficients_3d @3
+    interpolate_1d @4
+    interpolate_2d @5
+    interpolate_3d @6
+    calculate_values_1d @7
+    calculate_values_2d @8
+    calculate_values_3d @9
+
+    calculate_coefficients_1d_portable @10
+    calculate_coefficients_2d_portable @11
+    calculate_coefficients_3d_portable @12
+    interpolate_1d_portable @13
+    interpolate_2d_portable @14
+    interpolate_3d_portable @15
+    calculate_values_1d_portable @16
+    calculate_values_2d_portable @17
+    calculate_values_3d_portable @18

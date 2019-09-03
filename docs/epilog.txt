@@ -1,0 +1,28 @@
+
+..
+   The content of this file will be appended to every documentation file. Put common substitutions and links here.
+
+.. |spline_version| replace:: 1.0.0
+
+.. _CMake: http://www.cmake.org
+.. _Boost: http://www.boost.org
+.. _MATLAB: http://www.mathworks.com/products/matlab.html
+.. _Python: http://www.python.org
+
+.. _`spline_analysis on Github`: https://github.com/gpufit/spline_analysis
+
+.. _spline.h: https://github.com/gpufit/spline_analysis/blob/master/splines/spline.h
+
+..
+   Examples
+
+.. _`example_1d_interpolation()`: https://github.com/gpufit/spline_analysis/blob/cleaned_up/matlab/examples/example_1d_interpolation.m
+.. _`example_2d_resampling()`: https://github.com/gpufit/spline_analysis/tree/cleaned_up/matlab/examples/example_2d_resampling.m
+.. _`example_2d_shift()`: https://github.com/gpufit/spline_analysis/tree/cleaned_up/matlab/examples/example_2d_shift.m
+
+.. role:: raw-html(raw)
+   :format: html
+
+.. |br| raw:: html
+
+  <br/>

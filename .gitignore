@@ -1,0 +1,24 @@
+*.asv
+*.obf
+*.mat
+*.fig
+*.tif
+*.pptx
+*.png
+*.jpg
+*.h5
+*.hdf5
+*.ai
+/moments/dv_an_beadcalibration4pi__define.pro
+/docs/*.gz
+/docs/*.aux
+/docs/*.dvi
+/docs/*.log
+/docs/*.out
+/docs/*.pdf
+
+# docs
+/docs/_build
+
+# IntelliJ
+**/.idea
