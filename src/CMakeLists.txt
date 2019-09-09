@@ -33,7 +33,7 @@ endfunction()
 set( DEFAULT_DOUBLE_PRECISION OFF )
 
 # Set the default value for the precision
-set( DEFAULT_Matlab_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/$(Configuration)/matlab" )
+set( DEFAULT_Matlab_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/matlab/examples" )
 
 # Precision
 
@@ -50,7 +50,7 @@ if( Matlab_FOUND )
   find_program( Matlab_EXECUTABLE matlab
     PATHS "${Matlab_ROOT_DIR}/bin" PATH_SUFFIXES win32 win64 NO_DEFAULT_PATH )
   function( add_matlab_launcher target )
-    set( paths "${CMAKE_BINARY_DIR}/$(Configuration)/matlab" ${ARGN} )
+    set( paths "${CMAKE_BINARY_DIR}/$(Configuration)" "${Matlab_WORKING_DIRECTORY}" )
     list( GET paths -1 working_directory )
     string( REPLACE ";" "','" paths "${paths}" )
     set( arguments "-r addpath('${paths}');" )
@@ -69,7 +69,7 @@ if( Matlab_FOUND )
     add_custom_target( RUN_MATLAB )
     set_property( TARGET RUN_MATLAB PROPERTY FOLDER CMakePredefinedTargets )
     add_dependencies( RUN_MATLAB MATLAB_SPLINE_PACKAGE )
-    add_matlab_launcher( RUN_MATLAB "${Matlab_WORKING_DIRECTORY}")
+    add_matlab_launcher( RUN_MATLAB )
 endif()
 
 # Documentation (Latex->PDF)
