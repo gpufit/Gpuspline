@@ -30,7 +30,7 @@ Spline analysis was created by Adrian Przybylski, Jan Keller-Findeisen and Mark 
 
 MIT License
 
-Copyright (c) 2019 Adrian Przybylski, Jan Keller-Findeisen and Mark Bates
+Copyright (c) 2021 Adrian Przybylski, Jan Keller-Findeisen and Mark Bates
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
