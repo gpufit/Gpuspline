@@ -4,7 +4,7 @@ Software library for the calculation of multidimensional cubic splines
 
 Calculates spline coefficients and interpolated data values in 1D to 3D
 
-Homepage: [github.com/gpufit/XXX](https://github.com/gpufit/XXX)
+Homepage: [github.com/gpufit/gpuspline](https://github.com/gpufit/gpuspline)
 
 ## Quick start instructions
 
