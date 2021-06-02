@@ -112,7 +112,7 @@ clims = [min_value max_value];
 subplot(231); imagesc(x, y, noisy_psf, clims);            colorbar; title('noisy psf'); axis square;
 subplot(232); imagesc(x2, y2, initial_gauss_fit, clims);  colorbar; title('initial gauss fit'); axis square;
 subplot(233); imagesc(x2, y2, initial_spline_fit, clims); colorbar; title('initial spline fit'); axis square;
-subplot(234); imagesc(x2, y2, psf_normalized);              colorbar; title('psf template'); axis square;
+subplot(234); imagesc(x2, y2, psf_normalized);            colorbar; title('psf template'); axis square;
 subplot(235); imagesc(x2, y2, final_gauss_fit, clims);    colorbar; title('final gauss fit'); axis square;
 subplot(236); imagesc(x2, y2, final_spline_fit, clims);   colorbar; title('final spline fit'); axis square;
 colormap('hot');

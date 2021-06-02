@@ -26,7 +26,7 @@ else
 end
 
 n_coefficients_per_interval = power(4, n_dimensions);
-             
+
 %% run spline taking the time
 tic;
 coefficients = spline_coefficientsMex(data, n_points_x, n_points_y, n_points_z, n_dimensions);

@@ -21,7 +21,7 @@ model_id = ModelID.SPLINE_1D;
 x = (0 : size_x - 1)';
 SF = 2; % scaling factor
 x_spline = (0 : SF * (size_x - 1))';
-x2 = single(x_spline / SF); % 0, 0.5, .., size_x -1 
+x2 = single(x_spline / SF); % 0, 0.5, .., size_x -1
 
 %% generate PSF (two gaussians)
 psf_parameters = single([100, (size_x-1)/2, 1.5, 10]);

@@ -79,16 +79,14 @@ int test_spline_2d()
     }
     if (test_passed)
     {
-        std::cout << std::endl << "Test passed!" << std::endl << std::endl;
+        std::cout << std::endl << "2D Test passed!" << std::endl << std::endl;
         return 1;
     }
     else
     {
-        std::cout << std::endl << "Test failed!" << std::endl << std::endl;
+        std::cout << std::endl << "2D Test failed!" << std::endl << std::endl;
         return -1;
     }
-
-    return 0;
 }
 
 int test_spline_3d()
@@ -162,6 +160,7 @@ int test_spline_3d()
         x_values.data(), y_values.data(), z_values.data(),
         spline.data());
 
+    std::cout << std::endl << "3D Test passed!" << std::endl << std::endl;
     return 1;
 }
 

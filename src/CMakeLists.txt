@@ -1,5 +1,5 @@
 # Spline analysis
-# https://github.com/gpufit/spline_analysis
+# https://github.com/gpufit/Gpuspline
 
 if( MSVC ) # link runtime statically with MSVC
   foreach( type ${CMAKE_CONFIGURATION_TYPES} ${CMAKE_BUILD_TYPE} )
@@ -32,7 +32,7 @@ endfunction()
 # Set the default value for the precision
 set( DEFAULT_DOUBLE_PRECISION OFF )
 
-# Set the default value for the precision
+# Set the default value for the Matlab working directory
 set( DEFAULT_Matlab_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/src/matlab/examples" )
 
 # Precision
@@ -61,7 +61,7 @@ endif()
 # MATLAB Launcher
 
 if( Matlab_FOUND )
-    file(REMOVE ${CMAKE_BINARY_DIR}/spline_analysis.sln)
+    file(REMOVE ${CMAKE_BINARY_DIR}/Gpuspline.sln)
     if ( "${Matlab_WORKING_DIRECTORY}" STREQUAL "" )
         set( Matlab_WORKING_DIRECTORY ${DEFAULT_Matlab_WORKING_DIRECTORY} CACHE PATH "MATLAB working directory" FORCE)
     endif()
@@ -80,9 +80,9 @@ if( LATEX_PDFLATEX_FOUND )
   # run latex two times to get the references right
   add_custom_target( DOCUMENTATION_PDFLATEX
     COMMAND ${CMAKE_COMMAND} -E
-      chdir ${latex_manual_directory} "${PDFLATEX_COMPILER}" -interaction=nonstopmode spline_analysis.tex
+      chdir ${latex_manual_directory} "${PDFLATEX_COMPILER}" -interaction=nonstopmode Gpuspline.tex
     COMMAND ${CMAKE_COMMAND} -E
-      chdir ${latex_manual_directory} "${PDFLATEX_COMPILER}" -interaction=nonstopmode spline_analysis.tex
+      chdir ${latex_manual_directory} "${PDFLATEX_COMPILER}" -interaction=nonstopmode Gpuspline.tex
     COMMENT "Converting documentation to PDF"
   )
   set_property( TARGET DOCUMENTATION_PDFLATEX PROPERTY FOLDER CMakePredefinedTargets )

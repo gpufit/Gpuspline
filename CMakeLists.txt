@@ -1,5 +1,5 @@
 # Spline analysis
-# https://github.com/gpufit/spline_analysis
+# https://github.com/gpufit/Gpuspline
 
 # CMake
 
@@ -7,7 +7,7 @@ cmake_minimum_required( VERSION 3.11 )
 set_property( GLOBAL PROPERTY USE_FOLDERS ON )
 
 if( NOT PROJECT_NAME )
-  project( spline_analysis VERSION 1.0.0 )
+  project( Gpuspline VERSION 1.0.0 )
   include( CTest )
 endif()
 

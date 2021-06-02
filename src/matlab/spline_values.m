@@ -42,7 +42,7 @@ else
     assert(sum(dimensions > 1) == n_dimensions + 1,...
         'Wrong spline coefficients dimensions');
 end
-             
+
 tic;
 
 coefficients = reshape(coefficients, [], dimensions(5));

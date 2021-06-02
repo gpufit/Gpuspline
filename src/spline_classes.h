@@ -13,13 +13,18 @@
 // implementation of 1-3D cubic spline interpolation as partly described in http://mathworld.wolfram.com/CubicSpline.html
 
 class Spline1D
-{
+{ // 1D cubic interpolating spline calculations
 public:
-    // 1D cubic interpolating spline calculations
     // end point condition is that 1st and 2nd derivative of spline is zero at end points (?)
+    
     // data_size must be larger 1
+    
     Spline1D(std::size_t const data_size);
-    Spline1D(std::size_t const n_intervals, REAL * coefficients);
+    
+    Spline1D(
+        std::size_t const n_intervals,
+        REAL * coefficients);
+    
     ~Spline1D();
 
     // must be called before all below, data must be equally spaced
@@ -29,7 +34,10 @@ public:
     void calculate_coefficients(REAL * coefficients);
 
     // given a list of x values calls the function below iteratively
-    void calculate_values(REAL * spline_values, REAL const * x_values, std::size_t size_x);
+    void calculate_values(
+        REAL * spline_values,
+        REAL const * x_values,
+        std::size_t size_x);
 
     // calculates a spline value ( outside of range (x < 0 | x > number data points - 1) gives 0 + offset)
     REAL calculate_value(REAL const x);
@@ -58,15 +66,19 @@ private:
     bool data_initialized_;
 };
 
-// TODO for later, this assumes quadratic areas in 2D, make it so that rectangular is allowed (dimension vector)
+// TODO this assumes quadratic areas in 2D, make it so that rectangular is allowed (dimension vector)
 class Spline2D
-{
+{ // 2D cubic interpolating spline
 public:
-    // 2D cubic interpolating spline
     // end conditions ? (as in https://github.com/ZhuangLab/storm-analysis/blob/master/storm_analysis/spliner/spline2D.py)
+
     // TODO instead of giving size_x, size_y give std::vector<std::size_t> dimensions and check for correct length inside
+
     // data_sizes must be larger 1
-    Spline2D(std::size_t const data_size_x, std::size_t const data_size_y);
+
+    Spline2D(
+        std::size_t const data_size_x,
+        std::size_t const data_size_y);
     
     Spline2D(
         std::size_t const n_intervals_x,
@@ -85,11 +97,12 @@ public:
         REAL * spline_values,
         REAL const * x_values,
         REAL const * y_values,
-        // TODO replace size_x, size_y with vector
-        std::size_t const size_x,
+        std::size_t const size_x, // TODO replace size_x, size_y with vector
         std::size_t const size_y);
 
-    REAL calculate_value(REAL const x, REAL const y);
+    REAL calculate_value(
+        REAL const x,
+        REAL const y);
 
     void interpolate(
         REAL * interpolated_data,
@@ -101,7 +114,7 @@ public:
 
 public:
     static std::size_t const n_coefficients_per_point = 4 * 4;
-    // TODO  total number of spline intervals = product of (dimensions - 1)
+    // TODO total number of spline intervals = product of (dimensions - 1)
     std::size_t const n_intervals_;
 
 private:
@@ -119,14 +132,21 @@ private:
     bool data_initialized_;
 };
 
-// TODO for laters, make this on rectangular grids (dimensions vector)
+// TODO make this on rectangular grids (dimensions vector)
 class Spline3D
-{
+{ // 3D cubic interpolating spline
 public:
+
     // end point conditions ? (as in https://github.com/ZhuangLab/storm-analysis/blob/master/storm_analysis/spliner/spline3D.py)
-    // TODO use pointer array instead "std::size_t *" - or vector? - or as it is? needs to be discussed
+
+    // TODO use pointer array instead "std::size_t *" - or vector? - or as it is?
+
     // data_sizes must be larger 1
-    Spline3D(std::size_t const data_size_x, std::size_t const data_size_y, std::size_t const data_size_z);
+
+    Spline3D(
+        std::size_t const data_size_x,
+        std::size_t const data_size_y,
+        std::size_t const data_size_z);
 
     Spline3D(
         std::size_t const n_intervals_x,
@@ -149,7 +169,10 @@ public:
         std::size_t const size_y,
         std::size_t const size_z);
 
-    REAL calculate_value(REAL const x, REAL const y, REAL const z);
+    REAL calculate_value(
+        REAL const x,
+        REAL const y,
+        REAL const z);
 
     void interpolate(
         REAL * interpolated_data,

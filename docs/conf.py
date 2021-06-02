@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# spline_analysis documentation build configuration file, created by
+# Gpuspline documentation build configuration file, created by
 # sphinx-quickstart on Thu Aug  8 11:39:54 2019.
 #
 # This file is execfile()d with the current directory set to its
@@ -46,7 +46,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'spline_analysis'
+project = 'Gpuspline'
 copyright = '2019, Mark Bates, Jan Keller-Findeisen, Adrian Przybylski'
 author = 'Mark Bates, Jan Keller-Findeisen, Adrian Przybylski'
 
@@ -104,7 +104,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'spline_analysisdoc'
+htmlhelp_basename = 'Gpusplinedoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -131,7 +131,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'spline_analysis.tex', 'spline\\_analysis Documentation',
+    (master_doc, 'Gpuspline.tex', 'Gpuspline Documentation',
      'Mark Bates, Jan Keller-Findeisen, Adrian Przybylski', 'manual'),
 ]
 
@@ -141,7 +141,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'spline_analysis', 'spline_analysis Documentation',
+    (master_doc, 'Gpuspline', 'Gpuspline Documentation',
      [author], 1)
 ]
 
@@ -152,8 +152,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'spline_analysis', 'spline_analysis Documentation',
-     author, 'spline_analysis', 'One line description of project.',
+    (master_doc, 'Gpuspline', 'Gpuspline Documentation',
+     author, 'Gpuspline', 'One line description of project.',
      'Miscellaneous'),
 ]
 

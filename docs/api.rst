@@ -1,10 +1,10 @@
 .. _api-description:
 
 ===============================
-spline_analysis API description
+Gpuspline API description
 ===============================
 
-The spline_analysis source code compiles to a dynamic-link library (DLL), providing C interfaces.
+The Gpuspline source code compiles to a dynamic-link library (DLL), providing C interfaces.
 In the sections below, the C interfaces and their arguments are described in detail.
 
 .. _c-interface:

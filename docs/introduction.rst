@@ -4,9 +4,9 @@
 Introduction
 ============
 
-spline_analysis is ...
+Gpuspline is ...
 
-This manual describes how to install and build the spline_analysis library and its 
+This manual describes how to install and build the Gpuspline library and its 
 external bindings.
 
 The documentation includes:
@@ -16,8 +16,8 @@ The documentation includes:
 - A detailed description of the external bindings to Matlab and Python
 - Usage examples for C, Matlab, and Python
 
-The current version of the spline_analysis library is ...
-(`see homepage <https://github.com/gpufit/spline_analysis>`_). This manual was compiled 
+The current version of the Gpuspline library is ...
+(`see homepage <https://github.com/gpufit/Gpuspline>`_). This manual was compiled 
 on |today|.
 
 

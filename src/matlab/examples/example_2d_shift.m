@@ -14,7 +14,7 @@ y_shifted = y + 2.7;
 %% PSF parameters
 psf_parameters = single([100, (size_x-1)/2, (size_y-1)/2, 2, 10]);
 
-%% calculate PSF 
+%% calculate PSF
 psf = calculate_psf(x, y, psf_parameters);
 
 %% calculate spline coefficients

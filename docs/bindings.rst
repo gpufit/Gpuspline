@@ -4,7 +4,7 @@
 External bindings
 =================
 
-This sections describes the spline_analysis bindings to other programming languages. The bindings (to Python, Matlab or Java) aim to
+This sections describes the Gpuspline bindings to other programming languages. The bindings (to Python, Matlab or Java) aim to
 emulate the :ref:`c-interface` as closely as possible.
 	
 Python
@@ -30,8 +30,8 @@ Python Examples
 Matlab
 ------
 
-The Matlab binding for spline_analysis consists of Matlab scripts (spline_coefficients.m, spline_values.m,
-spline_interpolate.m). This scripts check the input data and call the C interfaces of the spline_analysis library, via
+The Matlab binding for Gpuspline consists of Matlab scripts (spline_coefficients.m, spline_values.m,
+spline_interpolate.m). This scripts check the input data and call the C interfaces of the Gpuspline library, via
 compiled .mex files. Please note, that before using the Matlab binding, the path to the .m and .mex files must be added
 to the Matlab path.
 
@@ -290,25 +290,3 @@ Example can be found at `example_2d_shift()`_.
     psf = p(1) .* arg_ex + p(5); % scale with amplitude and background
 
     end
-
-Java
-----
-
-Installation
-++++++++++++
-
- ...
-
-Java Interface
-++++++++++++++
-
-spline_analysis.spline_c
-........................
-
-Java Example
-++++++++++++
-
-example_name
-............
-
-...
