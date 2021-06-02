@@ -1,4 +1,4 @@
-# Spline analysis
+# Gpuspline sources
 # https://github.com/gpufit/Gpuspline
 
 if( MSVC ) # link runtime statically with MSVC
@@ -136,3 +136,7 @@ set_target_properties( splines_tests
 # Matlab binding
 
 add_subdirectory( matlab )
+
+# Python binding
+
+add_subdirectory( python )

@@ -6,7 +6,7 @@ External bindings
 
 This sections describes the Gpuspline bindings to other programming languages. The bindings (to Python, Matlab or Java) aim to
 emulate the :ref:`c-interface` as closely as possible.
-	
+
 Python
 ------
 

@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=spline_analysis
+set SPHINXPROJ=Gpuspline
 
 if "%1" == "" goto help
 

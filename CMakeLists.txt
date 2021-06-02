@@ -1,4 +1,4 @@
-# Spline analysis
+# Gpuspline
 # https://github.com/gpufit/Gpuspline
 
 # CMake

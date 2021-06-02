@@ -1,0 +1,21 @@
+Python binding for the [Gpuspline library](https://github.com/gpufit/Gpuspline) which implements Levenberg Marquardt curve fitting in CUDA
+
+Installation
+
+Currently the wheel file has to be installed locally.
+
+If NumPy is not yet installed, install it using pip from the command line
+
+pip install numpy
+
+Then install pyGpufit from the local folder via:
+
+pip install --no-index --find-links=LocalPathToWheelFile pyGpuspline
+
+Examples
+
+See examples folder. Additionally require matplotlib.
+
+Troubleshooting
+
+A common reason for the error message 'CUDA driver version is insufficient for CUDA runtime version' is an outdated Nvidia graphics driver.

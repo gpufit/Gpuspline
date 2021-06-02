@@ -47,8 +47,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Gpuspline'
-copyright = '2019, Mark Bates, Jan Keller-Findeisen, Adrian Przybylski'
-author = 'Mark Bates, Jan Keller-Findeisen, Adrian Przybylski'
+copyright = '2019, Adrian Przybylski, Jan Keller-Findeisen, Mark Bates'
+author = 'Adrian Przybylski, Jan Keller-Findeisen, Mark Bates'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -132,7 +132,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'Gpuspline.tex', 'Gpuspline Documentation',
-     'Mark Bates, Jan Keller-Findeisen, Adrian Przybylski', 'manual'),
+     'Adrian Przybylski, Jan Keller-Findeisen, Mark Bates', 'manual'),
 ]
 
 

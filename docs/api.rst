@@ -1,8 +1,8 @@
 .. _api-description:
 
-===============================
-Gpuspline API description
-===============================
+===============
+API description
+===============
 
 The Gpuspline source code compiles to a dynamic-link library (DLL), providing C interfaces.
 In the sections below, the C interfaces and their arguments are described in detail.

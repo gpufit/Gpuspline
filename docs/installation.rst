@@ -19,15 +19,12 @@ The following tools are required in order to build Gpuspline from source.
 *Required*
 
 * CMake_ 3.11 or later
-* A C/C++ Compiler
-
-  * Linux: ...
-  * Windows: Visual Studio 2013, 2015 or 2017
+* A C/C++ Compiler (gcc on Linux, Visual Studio on Windows)
 
 *Optional*
 
-* MATLAB_ if building the MATLAB bindings (minimum version Matlab ...)
-* Python_ if building the Python bindings (Python version 2.x or 3.x)
+* MATLAB_ if building the MATLAB bindings
+* Python_ if building the Python bindings
 * PDF Latex installation (like Miktex) if converting the documentation from Latex to PDF
 
 Source code availability
@@ -93,7 +90,7 @@ Set Matlab_WORKING_DIRECTORY to a valid directory, it will be added to
 the Matlab path.
 
 Compiling Gpuspline on Windows
-------------------------------------
+------------------------------
 
 After configuring and generating the solution files using CMake, go to the
 desired build directory and open Gpuspline.sln using Visual Studio. Select the
@@ -101,15 +98,3 @@ desired build directory and open Gpuspline.sln using Visual Studio. Select the
 "ALL_BUILD", and build this target. If the build process completes
 without errors, the Gpuspline binary files will be created in the corresponding
 "Debug" or "Release" folders in the build directory.
-
-Compiling Gpuspline on Linux
-----------------------------------
- ...
-
-MacOS
------
-
-Gpuspline has not yet been officially tested on a computer running MacOS.
-However, satisfying the Prerequisites_ and using CMake, we estimate that the
-library should build in principle and one should also be able to run the
-examples on MacOS.

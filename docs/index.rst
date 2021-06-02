@@ -11,3 +11,4 @@ Gpuspline documentation
    installation
    api
    bindings
+   splines

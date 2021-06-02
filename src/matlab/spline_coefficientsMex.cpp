@@ -50,7 +50,7 @@ void mexFunction(
         mexErrMsgIdAndTxt("Gpufit:Mex", msg);
     }
 
-    // TODO data is a matlab array, we can read the dimensions inside here, no need to explicitely write them down?)
+    // TODO data is a matlab array, we can read the dimensions inside here, no need to explicitly write them down?)
     // input parameters (data, nx, ny, nz, ndims)
     REAL * data = (REAL*)mxGetPr(prhs[0]);
     std::size_t n_points_x = (std::size_t)*mxGetPr(prhs[1]);

@@ -113,7 +113,7 @@ void mexFunction(
     std::size_t const values_size
         = values_size_x * values_size_y * values_size_z;
 
-    // output parameter: preallocate coefficients array
+    // output parameter: preallocate spline_values array
     REAL * spline_values;
     mxArray * mx_spline_values;
     mx_spline_values = mxCreateNumericMatrix(values_size, 1, MX_REAL, mxREAL);
