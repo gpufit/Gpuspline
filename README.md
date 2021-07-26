@@ -22,6 +22,10 @@ Documentation for the Spline analysis library may be found online ([latest docum
 
 Instructions for building Gpuspline are found in the documentation: [Building from source code](https://github.com/xxx/blob/master/docs/installation.rst).
 
+## Examples
+
+Examples for using Gpuspline in Matlab and Python are in the [examples](examples) folder. Examples using splines to perform fitting are located in the examples section of [Gpufit](https://github.com/gpufit/Gpufit).
+
 ## Authors
 
 Gpuspline was created by Adrian Przybylski, Jan Keller-Findeisen and Mark Bates at the Max Planck Institute for Biophysical Chemistry, in Göttingen, Germany.

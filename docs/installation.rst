@@ -98,3 +98,33 @@ desired build directory and open Gpuspline.sln using Visual Studio. Select the
 "ALL_BUILD", and build this target. If the build process completes
 without errors, the Gpuspline binary files will be created in the corresponding
 "Debug" or "Release" folders in the build directory.
+Compiling Gpuspline on Linux
+-------------------------
+The following commands can be executed to build Gpuspline on Linux.
+.. code-block:: bash
+	git clone https://github.com/gpufit/Gpuspline.git Gpuspline
+	mkdir Gpuspline-build
+	cd Gpuspline-build
+	cmake -DCMAKE_BUILD_TYPE=RELEASE ../Gpuspline
+	make
+To install the Python package
+
+.. code-block:: bash
+
+   cd pyGpuspline/dist
+   pip install pyGpuspline-X.Y.Z-py2.py3-none-any.whl
+   
+To run the Matlab package you need to tell Matlab to use a newer version of the C++ standard library
+
+.. code-block:: bash
+
+   export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6
+   matlab
+   
+Then in Matlab add the matlab output directory to the path and execute some examples.
+
+.. code-block:: bash
+
+   addpath('XX/Gpuspline-build/matlab');
+   cd('XX/Gpuspline/src/matlab/examples');
+   example_1d_interpolation();
