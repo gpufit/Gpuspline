@@ -12,11 +12,11 @@
 #ifdef SPLINE_DOUBLE
 #define MX_REAL mxDOUBLE_CLASS
 #define TOLERANCE_PRECISION_MESSAGE()\
-    mexErrMsgIdAndTxt("Gpufit:Mex", "tolerance is not a double");
+    mexErrMsgIdAndTxt("Gpuspline:Mex", "tolerance is not a double");
 #else
 #define MX_REAL mxSINGLE_CLASS
 #define TOLERANCE_PRECISION_MESSAGE()\
-    mexErrMsgIdAndTxt("Gpufit:Mex", "tolerance is not a single");
+    mexErrMsgIdAndTxt("Gpuspline:Mex", "tolerance is not a single");
 #endif // GPUFIT_DOUBLE
 
 void mexFunction(

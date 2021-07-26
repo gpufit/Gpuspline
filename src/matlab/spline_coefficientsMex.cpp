@@ -14,14 +14,14 @@
 #define PRINT_MSG std::snprintf
 #endif
 
-#ifdef GPUFIT_DOUBLE
+#ifdef GPUSPLINE_DOUBLE
 #define MX_REAL mxDOUBLE_CLASS
 #define TOLERANCE_PRECISION_MESSAGE()\
-    mexErrMsgIdAndTxt("Gpufit:Mex", "tolerance is not a double");
+    mexErrMsgIdAndTxt("Gpuspline:Mex", "tolerance is not a double");
 #else
 #define MX_REAL mxSINGLE_CLASS
 #define TOLERANCE_PRECISION_MESSAGE()\
-    mexErrMsgIdAndTxt("Gpufit:Mex", "tolerance is not a single");
+    mexErrMsgIdAndTxt("Gpuspline:Mex", "tolerance is not a single");
 #endif // GPUFIT_DOUBLE
 
 // entry point for Matlab
@@ -40,14 +40,14 @@ void mexFunction(
     {
         char msg[50];
         PRINT_MSG(msg, 50, "%d input arguments required.", expected_nrhs);
-        mexErrMsgIdAndTxt("Gpufit:Mex", msg);
+        mexErrMsgIdAndTxt("Gpuspline:Mex", msg);
     }
 
     if (nlhs != expected_nlhs)
     {
         char msg[50];
         PRINT_MSG(msg, 50, "%d output arguments required.", expected_nlhs);
-        mexErrMsgIdAndTxt("Gpufit:Mex", msg);
+        mexErrMsgIdAndTxt("Gpuspline:Mex", msg);
     }
 
     // TODO data is a matlab array, we can read the dimensions inside here, no need to explicitly write them down?)
@@ -117,7 +117,7 @@ void mexFunction(
     {
         char msg[50];
         PRINT_MSG(msg, 50, "Wrong number of dimensions!");
-        mexErrMsgIdAndTxt("Gpufit:Mex", msg);
+        mexErrMsgIdAndTxt("Gpuspline:Mex", msg);
         break;
     }
     }

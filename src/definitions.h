@@ -1,6 +1,8 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#include <cstddef>
+
 // Precision
 #ifdef SPLINE_DOUBLE
 #define REAL double

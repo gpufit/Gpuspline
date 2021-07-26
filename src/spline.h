@@ -9,47 +9,47 @@ extern "C" {
 
     int calculate_coefficients_1d(
         REAL * data,
-        size_t data_size_x,
+        std::size_t data_size_x,
         REAL * coefficients);
 
     int calculate_coefficients_2d(
         REAL * data,
-        size_t data_size_x,
-        size_t data_size_y,
+        std::size_t data_size_x,
+        std::size_t data_size_y,
         REAL * coefficients);
 
     int calculate_coefficients_3d(
         REAL * data,
-        size_t data_size_x,
-        size_t data_size_y,
-        size_t data_size_z,
+        std::size_t data_size_x,
+        std::size_t data_size_y,
+        std::size_t data_size_z,
         REAL * coefficients);
 
     int interpolate_1d(
         REAL * data,
-        size_t data_size_x,
-        size_t new_size_x,
+        std::size_t data_size_x,
+        std::size_t new_size_x,
         REAL * x_values,
         REAL * interpolated_data);
 
     int interpolate_2d(
         REAL * data,
-        size_t data_size_x,
-        size_t data_size_y,
-        size_t new_size_x,
-        size_t new_size_y,
+        std::size_t data_size_x,
+        std::size_t data_size_y,
+        std::size_t new_size_x,
+        std::size_t new_size_y,
         REAL * x_values,
         REAL * y_values,
         REAL * interpolated_data);
 
     int interpolate_3d(
         REAL * data,
-        size_t data_size_x,
-        size_t data_size_y,
-        size_t data_size_z,
-        size_t new_size_x,
-        size_t new_size_y,
-        size_t new_size_z,
+        std::size_t data_size_x,
+        std::size_t data_size_y,
+        std::size_t data_size_z,
+        std::size_t new_size_x,
+        std::size_t new_size_y,
+        std::size_t new_size_z,
         REAL * x_values,
         REAL * y_values,
         REAL * z_values,
@@ -57,29 +57,29 @@ extern "C" {
 
     int calculate_values_1d(
         REAL * coefficients,
-        size_t const n_intervals_x,
-        size_t const values_size_x,
+        std::size_t const n_intervals_x,
+        std::size_t const values_size_x,
         REAL * x_values,
         REAL * spline_values);
 
     int calculate_values_2d(
         REAL * coefficients,
-        size_t const n_intervals_x,
-        size_t const n_intervals_y,
-        size_t const values_size_x,
-        size_t const values_size_y,
+        std::size_t const n_intervals_x,
+        std::size_t const n_intervals_y,
+        std::size_t const values_size_x,
+        std::size_t const values_size_y,
         REAL * x_values,
         REAL * y_values,
         REAL * spline_values);
 
     int calculate_values_3d(
         REAL * coefficients,
-        size_t const n_intervals_x,
-        size_t const n_intervals_y,
-        size_t const n_intervals_z,
-        size_t const values_size_x,
-        size_t const values_size_y,
-        size_t const values_size_z,
+        std::size_t const n_intervals_x,
+        std::size_t const n_intervals_y,
+        std::size_t const n_intervals_z,
+        std::size_t const values_size_x,
+        std::size_t const values_size_y,
+        std::size_t const values_size_z,
         REAL * x_values,
         REAL * y_values,
         REAL * z_values,

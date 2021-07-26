@@ -11,9 +11,9 @@ set( setup_files
 )
 set( module_directory "${build_directory}/pygpuspline" )
 set( module_files
-  "${CMAKE_CURRENT_SOURCE_DIR}/pygpufit/__init__.py"
-  "${CMAKE_CURRENT_SOURCE_DIR}/pygpufit/gpuspline.py"
-  "${CMAKE_CURRENT_SOURCE_DIR}/pygpufit/version.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/pygpuspline/__init__.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/pygpuspline/gpuspline.py"
+  "${CMAKE_CURRENT_SOURCE_DIR}/pygpuspline/version.py"
 )
 
 add_custom_target( PYTHON_PACKAGE

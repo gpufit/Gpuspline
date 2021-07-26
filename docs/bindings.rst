@@ -64,7 +64,7 @@ The signature of the spline_coefficients function is
     the number of spline intervals in x, y, z.
 :time: Execution time of call to spline_coefficientsMex in seconds.
 
-Errors are raised if checks on parameters fail or if the execution of gpufit fails.
+Errors are raised if checks on parameters fail or if the execution of the function fails.
 
 spline_values
 .............
@@ -111,7 +111,7 @@ y and z parameter are optional (for 2D/3D data)
     N\ :sub:`ch` the number of channels.
 :time: Execution time of call to spline_valuesMex in seconds.
 
-Errors are raised if checks on parameters fail or if the execution of gpufit fails.
+Errors are raised if checks on parameters fail or if the execution of the function fails.
 
 spline_interpolate
 ..................
@@ -148,7 +148,7 @@ y and z parameter are optional (for 2D/3D interpolation)
     ,where N\ :sub:`x`, N\ :sub:`y`, N\ :sub:`z` represent the number of output data points in x, y, z.
 :time: Execution time of call to spline_interpolateMex in seconds.
 
-Errors are raised if checks on parameters fail or if the execution of gpufit fails.
+Errors are raised if checks on parameters fail or if the execution of the function fails.
 
 
 Matlab Examples

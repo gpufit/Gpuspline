@@ -12,7 +12,7 @@ external bindings.
 
 The documentation includes:
 
-- Instructions for building and installing Gpufit
+- Instructions for building and installing Gpuspline
 - A detailed description of the C interface
 - A detailed description of the external bindings to Matlab and Python
 - Usage examples for C, Matlab, and Python

@@ -14,14 +14,14 @@
 #define PRINT_MSG std::snprintf
 #endif
 
-#ifdef GPUFIT_DOUBLE
+#ifdef GPUSPLINE_DOUBLE
 #define MX_REAL mxDOUBLE_CLASS
 #define TOLERANCE_PRECISION_MESSAGE()\
-    mexErrMsgIdAndTxt("Gpufit:Mex", "tolerance is not a double");
+    mexErrMsgIdAndTxt("Gpuspline:Mex", "tolerance is not a double");
 #else
 #define MX_REAL mxSINGLE_CLASS
 #define TOLERANCE_PRECISION_MESSAGE()\
-    mexErrMsgIdAndTxt("Gpufit:Mex", "tolerance is not a single");
+    mexErrMsgIdAndTxt("Gpuspline:Mex", "tolerance is not a single");
 #endif // GPUFIT_DOUBLE
 
 // entry point for Matlab
@@ -169,7 +169,7 @@ void mexFunction(
     {
         char msg[50];
         PRINT_MSG(msg, 50, "Wrong number of dimensions!");
-        mexErrMsgIdAndTxt("Gpufit:Mex", msg);
+        mexErrMsgIdAndTxt("Gpuspline:Mex", msg);
         break;
     }
     }
