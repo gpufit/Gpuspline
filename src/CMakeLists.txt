@@ -137,7 +137,7 @@ set_target_properties( splines
 add_executable( splines_tests
     spline_tests.cpp
 )
-
+target_include_directories( splines_tests PRIVATE ${PROJECT_SOURCE_DIR} )
 target_link_libraries( splines_tests splines )
 
 set_target_properties( splines_tests

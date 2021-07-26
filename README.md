@@ -14,7 +14,7 @@ The latest Gpuspline binary release, supporting Windows 32-bit and 64-bit machin
 
 ## Documentation
 
-[![Documentation Status](https://readthedocs.org/projects/XXX/badge/?version=latest)](http://xxx.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/gpuspline/badge/?version=latest)](https://gpuspline.readthedocs.io/en/latest/?badge=latest)
 
 Documentation for the Spline analysis library may be found online ([latest documentation](http://xxx.readthedocs.io/en/latest/?badge=latest)), and also as a PDF file in the binary distribution of Spline analysis.
 

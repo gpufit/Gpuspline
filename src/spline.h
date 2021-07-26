@@ -2,6 +2,7 @@
 #define SPLINE_H_INCLUDED
 
 #include "definitions.h"
+#include <cstddef>
 
 #ifdef __cplusplus
 extern "C" {

@@ -5,6 +5,8 @@
 #include "equation_system.h"
 #include <vector>
 #include <cmath>
+#include <cstddef>
+#include <limits>
 
 // TODO maybe we also want to calculate derivatives
 
