@@ -15,6 +15,7 @@ set( module_files
   "${CMAKE_CURRENT_SOURCE_DIR}/pygpuspline/gpuspline.py"
   "${CMAKE_CURRENT_SOURCE_DIR}/pygpuspline/version.py"
 )
+set( binary $<TARGET_FILE:splines> )
 
 add_custom_target( PYTHON_PACKAGE
   COMMAND ${CMAKE_COMMAND} -E

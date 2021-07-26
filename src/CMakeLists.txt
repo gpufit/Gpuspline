@@ -72,6 +72,19 @@ if( Matlab_FOUND )
     add_matlab_launcher( RUN_MATLAB )
 endif()
 
+# Python
+
+find_package( PythonInterp )
+if( PYTHONINTERP_FOUND )
+  function( add_python_launcher target )
+    set( paths "${CMAKE_BINARY_DIR}/$(Configuration)" ${ARGN} )
+    list( GET paths -1 working_directory )
+    string( REPLACE ";" "')\nsys.path.append('" paths "${paths}" )
+    set( arguments "-i -c \"import sys\nsys.path.append('${paths}')\"" )
+    add_launcher( ${target} "${PYTHON_EXECUTABLE}" "${arguments}" "${working_directory}" )
+  endfunction()
+endif()
+
 # Documentation (Latex->PDF)
 
 find_package( LATEX COMPONENTS PDFLATEX )
