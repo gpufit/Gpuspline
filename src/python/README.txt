@@ -1,4 +1,4 @@
-Python binding for the [Gpuspline library](https://github.com/gpufit/Gpuspline) which implements Levenberg Marquardt curve fitting in CUDA
+Python binding for the [Gpuspline library](https://github.com/gpufit/Gpuspline) for the calculation of multidimensional cubic splines.
 
 Installation
 

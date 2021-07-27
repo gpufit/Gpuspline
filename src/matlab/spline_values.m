@@ -1,15 +1,15 @@
 function [values, time] = spline_values(coefficients, x, y, z)
-% calculates spline values given a spline representation and x, y and z
-% values
+% Calculates spline values given a spline representation and x, y and z
+% values.
 %
 % y and z parameter is optional (only if you want 2D/3D values)
 %
-% note: x, y, z are a range of values along their coordinate axis and the total
+% Note: x, y, z are a range of values along their coordinate axis and the total
 % number is the cartesian product of them all!
-%
-% TODO this should change, we would rather give full x, y, z arrays
+
+% TODO This behavior should change, we would rather give full x, y, z arrays
 % allowing arbitrary combinations of x, y, z values because internally
-% anyway the intervalls are computed in which each x,y,z value falls
+% anyway the intervalls are computed in which each x,y,z value falls.
 
 %% type checks
 assert(isa(coefficients, 'single'),'Type of spline coefficients is not single');

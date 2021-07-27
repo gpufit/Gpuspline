@@ -1,12 +1,14 @@
 function [interpolated_data, time] = spline_interpolate(data, x, y, z)
-% interpolates data at positions x, y, z by using a combination of
-% spline_coefficients and spline_value
+% Interpolates 1-3D data at positions x, y, z. Internally calls
+% spline_coefficients first to create a spline representation and then 
+% spline_value to obtain interpolated values. If repeated interpolation
+% of the same data set is needed, it's better to call spline_coefficients
+% only once and then use spline_value instead of this function.
 
 % data is single
 assert(isa(data, 'single'), 'Type of data is not single');
 
 tic;
-
 switch nargin
     case 2
         n_dimensions = 1;
@@ -31,7 +33,6 @@ switch nargin
     otherwise
         error('wrong number of input arguments');
 end
-
 time = toc;
 
 end

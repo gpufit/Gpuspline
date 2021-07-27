@@ -16,9 +16,12 @@
 ..
    Examples
 
-.. _`example_1d_interpolation()`: https://github.com/gpufit/Gpuspline/blob/cleaned_up/matlab/examples/example_1d_interpolation.m
-.. _`example_2d_resampling()`: https://github.com/gpufit/Gpuspline/tree/cleaned_up/matlab/examples/example_2d_resampling.m
-.. _`example_2d_shift()`: https://github.com/gpufit/Gpuspline/tree/cleaned_up/matlab/examples/example_2d_shift.m
+.. _`example_1d_interpolation.m`: https://github.com/gpufit/Gpuspline/blob/master/examples/matlab/example_1d_interpolation.m
+.. _`example_2d_resampling.m`: https://github.com/gpufit/Gpuspline/blob/master/examples/matlab/example_2d_resampling.m
+.. _`example_2d_shift.m`: https://github.com/gpufit/Gpuspline/blob/master/examples/matlab/example_2d_shift.m
+
+.. _`example_1d_interpolation.py`: https://github.com/gpufit/Gpuspline/blob/master/examples/python/example_1d_interpolation.py
+.. _`example_2d_resampling.py`: https://github.com/gpufit/Gpuspline/blob/master/examples/python/example_2d_resampling.py
 
 .. role:: raw-html(raw)
    :format: html

@@ -56,9 +56,9 @@ set x64_MATLAB_INSTALL=%ROOT_INSTALL%\matlab64
 set SDK_INSTALL_ROOT=%ROOT_INSTALL%\Gpuspline_sdk
 
 set x64_BUILD=%BUILD_BASE%\VC16x64\RelWithDebInfo
-set x64_BUILD_LIB=%BUILD_BASE%\VC16x64\Gpuspline\RelWithDebInfo
+set x64_BUILD_LIB=%BUILD_BASE%\VC16x64\src\RelWithDebInfo
 set x32_BUILD=%BUILD_BASE%\VC16x32\RelWithDebInfo
-set x32_BUILD_LIB=%BUILD_BASE%\VC16x32\Gpuspline\RelWithDebInfo
+set x32_BUILD_LIB=%BUILD_BASE%\VC16x32\src\RelWithDebInfo
 
 set x64_PYTHON_BUILD=%x64_BUILD%\pyGpuspline\dist
 set x32_PYTHON_BUILD=%x32_BUILD%\pyGpuspline\dist
@@ -104,21 +104,21 @@ mkdir "%PYTHON_INSTALL%"
 copy "%x64_PYTHON_BUILD%\pyGpuspline-%VERSION%-py2.py3-none-any.whl" "%PYTHON_INSTALL%\pyGpuspline-%VERSION%-py2.py3-none-win_amd64.whl"
 copy "%x32_PYTHON_BUILD%\pyGpuspline-%VERSION%-py2.py3-none-any.whl" "%PYTHON_INSTALL%\pyGpuspline-%VERSION%-py2.py3-none-win32.whl"
 copy "%PYTHON_SOURCE%\README.txt" "%PYTHON_INSTALL%"
-xcopy "%PYTHON_SOURCE%\examples" "%PYTHON_INSTALL%\examples" /i /q
+xcopy "%EXAMPLES_SOURCE%\python" "%PYTHON_INSTALL%\examples" /i /q
 
 REM copy Matlab 32 bit
 
 echo collect matlab32
 mkdir "%x32_MATLAB_INSTALL%"
 xcopy "%x32_MATLAB_BUILD%" "%x32_MATLAB_INSTALL%" /q
-xcopy "%MATLAB_SOURCE%\examples" "%x32_MATLAB_INSTALL%\examples" /i /q
+xcopy "%EXAMPLES_SOURCE%\matlab" "%x32_MATLAB_INSTALL%\examples" /i /q
 
 REM copy Matlab 64 bit
 
 echo collect matlab64
 mkdir "%x64_MATLAB_INSTALL%"
 xcopy "%x64_MATLAB_BUILD%" "%x64_MATLAB_INSTALL%" /q
-xcopy "%MATLAB_SOURCE%\examples" "%x64_MATLAB_INSTALL%\examples" /i /q
+xcopy "%EXAMPLES_SOURCE%\matlab" "%x64_MATLAB_INSTALL%\examples" /i /q
 
 REM copy SDK_INSTALL_ROOT
 
@@ -127,7 +127,7 @@ mkdir "%SDK_INSTALL_ROOT%"
 copy "%SDK_README_SOURCE%" "%SDK_INSTALL_ROOT%\README.txt"
 
 mkdir "%SDK_INSTALL_ROOT%\include"
-copy "%SOURCE_BASE%\Gpuspline\Gpuspline.h" "%SDK_INSTALL_ROOT%\include"
+copy "%SOURCE_BASE%\src\spline.h" "%SDK_INSTALL_ROOT%\include"
 
 mkdir "%SDK_INSTALL_ROOT%\win32"
 copy "%x32_BUILD%\splines.dll" "%SDK_INSTALL_ROOT%\win32"

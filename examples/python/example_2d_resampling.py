@@ -1,5 +1,10 @@
 """
+Example of the Matlab binding of the Gpuspline library for the
+calculation of multidimensional cubic splines.
 
+2D data is interpolated (up- and downsampled and shifted).
+
+Requires pyGpuspline, Numpy and Matplotlib
 """
 
 import numpy as np
@@ -14,13 +19,12 @@ def calculate_psf(x, y, p):
     sx = p[3] - 0.2
     sy = p[3] + 0.2
 
-    psf = p[0] * np.exp(-0.5*(((x-p[1])/sx)**2+((y-p[2])/sy)**2))+p[4]
+    psf = p[0] * np.exp(-0.5 * (((x - p[1]) / sx) ** 2 + ((y - p[2]) / sy) ** 2)) + p[4]
 
     return psf
 
 
 if __name__ == '__main__':
-
     # PSF size
     size_x = 10
     size_y = 20
@@ -39,7 +43,7 @@ if __name__ == '__main__':
     y_shift = y + 2.7
 
     # PSF parameters
-    psf_parameters = (100, (size_x-1)/2, (size_y-1)/2, 3, 10)
+    psf_parameters = (100, (size_x - 1) / 2, (size_y - 1) / 2, 3, 10)
 
     # calculate PSF
     psf = calculate_psf(x, y, psf_parameters)
@@ -57,15 +61,15 @@ if __name__ == '__main__':
     psf_shift = gs.spline_values(coefficients, x_shift, y_shift)
 
     # display results
-    fig, axs = plt.subplots(2,2)
+    fig, axs = plt.subplots(2, 2)
     fig.tight_layout()
     axs = axs.flat
-    axs[0].imshow(psf)
-    axs[0].set_title('PSF')
-    axs[1].imshow(psf_up)
-    axs[1].set_title('Upsampled PSF')
-    axs[2].imshow(psf_down)
-    axs[2].set_title('Downsampled PSF')
-    axs[3].imshow(psf_shift)
-    axs[3].set_title('Shifted PSF')
+    axs[0].imshow(psf, cmap='hot')
+    axs[0].set_title('Original data')
+    axs[1].imshow(psf_up, cmap='hot')
+    axs[1].set_title('Upsampled')
+    axs[2].imshow(psf_down, cmap='hot')
+    axs[2].set_title('Downsampled')
+    axs[3].imshow(psf_shift, cmap='hot')
+    axs[3].set_title('Shifted')
     plt.show()

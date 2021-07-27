@@ -10,28 +10,213 @@ emulate the :ref:`c-interface` as closely as possible.
 Python
 ------
 
- ...
+The Python binding for Gpuspline consists of a Python package pyGpuspline that provides various functions
+that call the C interface of the Gpuspline library. In general the routines expect data as NumPy arrays.
 
 Installation
 ++++++++++++
 
- ...
+Wheel files for Python on Windows 32/64 are included in the binary package. NumPy is required.
+
+Install the wheel file with
+
+.. code-block:: bash
+
+    pip install --no-index --find-links=LocalPathToWheelFile pyGpuspline
 
 Python Interface
 ++++++++++++++++
 
- ...
+The Python interface is a thin wrapper around the C interface. Please see the documentation of the
+C interface for more details on the interpretation of input and output parameters.
+
+spline_coefficients
+...................
+
+The signature of the spline_coefficients method is
+
+.. code-block:: python
+
+    def spline_coefficients(data)
+
+The data must be a 1-3D NumPy array of data type single. This method is equivalent to call the C interface
+functions calculate_coefficients_Xd. The return value is a NumPy array of size 4^d (d=dimension of data) times product of
+number of pixels in each direction minus one.
+
+spline_interpolate
+..................
+
+The signature of the spline_interpolate method is
+
+.. code-block:: python
+
+    def spline_interpolate(data, x, y=None, z=None):
+
+The data must be a 1-3D NumPy array of data type single. This method is equivalent to call the C interface
+functions interpolate_Xd. In case of a 1D data array only x values should be specified, in case of a 2D array
+x and y values and for a 3D data array x, y and z values.
+
+The output is the interpolated data, a NumPy array with product of elements in x times elements in y  times
+elements in z entries.
+
+spline_values
+.............
+
+The signature of the spline_values method is
+
+.. code-block:: python
+
+    def spline_values(coefficients, x, y=None, z=None):
+
+The coefficients are a (d+1) dimensional NumPy array of type single (d=dimension of original data) describing the spline
+associated with the data. In the first dimension with 4^d entries are the coefficients of a single spline interval.
+The spline intervals for each data pixel are stored from the second dimension on. For a 1D spline, only specify x, for a
+2D spline only x and y and for a 3D spline only x, y and z. The output is a NumPy array holding the interpolated
+values of the data represented by the splines at the positions specified by x, y and z. This method is equivalent
+to call functions calculate_values_Xd in the C interface.
 
 Python Examples
 +++++++++++++++
 
- ...
+1D interpolation example
+........................
+
+An example for interpolating data points calling a cubic spline interpolation routine implemented in C.1D data is
+upsampled, cut, stretched and shifted. The example can be found at `example_1d_interpolation.py`_.
+
+.. code-block:: python
+
+    """
+    Example of the Python binding of the Gpuspline library for the
+    calculation of multidimensional cubic splines.
+
+    Interpolates 1D data. The data is upsampled, cut, stretched and shifted.
+
+    Requires pyGpuspline, Numpy and Matplotlib
+    """
+
+    import numpy as np
+    from matplotlib import pyplot as plt
+    import pygpuspline.gpuspline as gs
+
+    if __name__ == '__main__':
+        # input data
+        y = np.array([0, 0, 0.2, 1, 1.1, 1.3, 2, 2.5, 3, 4, 4.25, 4, 3, 2.5, 2, 1.3, 1.1, 1, 0.2, 0, 0], np.float32)
+        x = np.arange(y.size)
+        center = x[-1] / 2
+
+        # interpolation parameters
+        edge = 1.4
+        width = 1.1
+        shift = 1.2
+        sampling_factor = 0.5
+
+        # interpolation
+        xq = np.arange(x[0], x[-1], sampling_factor, np.float32)
+        xq = xq[np.logical_and(xq >= edge, xq <= np.amax(xq) - edge)]
+        xq /= width
+        xq += center * (1 - 1 / width) - shift
+        yq = gs.spline_interpolate(y, xq)
+
+        # show result
+        fig, ax = plt.subplots()
+        ax.plot(x, y, color='blue', label='original')
+        ax.plot(xq + shift, yq, color='red', marker='x', label='interpolated')
+        ax.grid()
+        ax.set_xlim(0, 20)
+        ax.set_ylim(0, 1.1 * np.amax(y))
+        ax.legend()
+        plt.show()
+
+2D resampling and shifting example
+..................................
+
+The example can be found at `example_2d_resampling.py`_.
+
+.. code-block:: python
+
+    """
+    Example of the Matlab binding of the Gpuspline library for the
+    calculation of multidimensional cubic splines.
+
+    2D data is interpolated (up- and downsampled and shifted).
+
+    Requires pyGpuspline, Numpy and Matplotlib
+    """
+
+    import numpy as np
+    from matplotlib import pyplot as plt
+    import pygpuspline.gpuspline as gs
+
+
+    def calculate_psf(x, y, p):
+        """
+
+        """
+        sx = p[3] - 0.2
+        sy = p[3] + 0.2
+
+        psf = p[0] * np.exp(-0.5 * (((x - p[1]) / sx) ** 2 + ((y - p[2]) / sy) ** 2)) + p[4]
+
+        return psf
+
+
+    if __name__ == '__main__':
+        # PSF size
+        size_x = 10
+        size_y = 20
+
+        # derived values
+        x = np.arange(size_x, dtype=np.float32).reshape((size_x, 1))
+        y = np.arange(size_y, dtype=np.float32).reshape((1, size_y))
+
+        x_up = np.arange(size_x, step=0.1, dtype=np.float32)
+        y_up = np.arange(size_y, step=0.1, dtype=np.float32)
+
+        x_down = np.arange(size_x, step=2, dtype=np.float32)
+        y_down = np.arange(size_y, step=2, dtype=np.float32)
+
+        x_shift = x - 1.3
+        y_shift = y + 2.7
+
+        # PSF parameters
+        psf_parameters = (100, (size_x - 1) / 2, (size_y - 1) / 2, 3, 10)
+
+        # calculate PSF
+        psf = calculate_psf(x, y, psf_parameters)
+
+        # calculate spline coefficients
+        coefficients = gs.spline_coefficients(psf)
+
+        # generate upsampled PSF
+        psf_up = gs.spline_values(coefficients, x_up, y_up)
+
+        # generate downsampled PSF
+        psf_down = gs.spline_values(coefficients, x_down, y_down)
+
+        # generate shifted PSF
+        psf_shift = gs.spline_values(coefficients, x_shift, y_shift)
+
+        # display results
+        fig, axs = plt.subplots(2, 2)
+        fig.tight_layout()
+        axs = axs.flat
+        axs[0].imshow(psf, cmap='hot')
+        axs[0].set_title('Original data')
+        axs[1].imshow(psf_up, cmap='hot')
+        axs[1].set_title('Upsampled')
+        axs[2].imshow(psf_down, cmap='hot')
+        axs[2].set_title('Downsampled')
+        axs[3].imshow(psf_shift, cmap='hot')
+        axs[3].set_title('Shifted')
+        plt.show()
+
 
 Matlab
 ------
 
 The Matlab binding for Gpuspline consists of Matlab scripts (spline_coefficients.m, spline_values.m,
-spline_interpolate.m). This scripts check the input data and call the C interfaces of the Gpuspline library, via
+spline_interpolate.m). These scripts check the input data and call the C interfaces of the Gpuspline library, via
 compiled .mex files. Please note, that before using the Matlab binding, the path to the .m and .mex files must be added
 to the Matlab path.
 
@@ -158,16 +343,21 @@ Matlab Examples
 ........................
 
 An example for interpolating data points calling a cubic spline interpolation routine implemented in C.1D data is
-upsampled, cut, stretched and shifted. The example can be found at `example_1d_interpolation()`_.
+upsampled, cut, stretched and shifted. The example can be found at `example_1d_interpolation.m`_.
 
 2D resampling example
 .....................
 
-Example can be found at `example_2d_resampling()`_.
+Example can be found at `example_2d_resampling.m`_.
 
 .. code-block:: matlab
 
     function example_2d_resampling()
+    % Example of the Matlab binding of the Gpuspline library for the
+    % calculation of multidimensional cubic splines.
+    %
+    % 2D data is interpolated (up- and downsampled).
+
 
     %% psf size
     size_x = 15;
@@ -201,11 +391,11 @@ Example can be found at `example_2d_resampling()`_.
     %% figure
     figure;
     subplot(131); imagesc(x, y, psf);
-    axis image; title('PSF');
+    axis image; title('Original data');
     subplot(132); imagesc(x_up, y_up, psf_up);
-    axis image; title('Upsampled PSF');
+    axis image; title('Upsampled');
     subplot(133); imagesc(x_down, y_down, psf_down);
-    axis image; title('Downsampled PSF');
+    axis image; title('Downsampled');
     colormap('hot');
 
     end
@@ -233,11 +423,15 @@ Example can be found at `example_2d_resampling()`_.
 example_2d_shift()
 ..................
 
-Example can be found at `example_2d_shift()`_.
+Example can be found at `example_2d_shift.m`_.
 
 .. code-block:: matlab
 
     function example_2d_shift()
+    % Example of the Matlab binding of the Gpuspline library for the
+    % calculation of multidimensional cubic splines.
+    %
+    % 2D data is interpolated (shifted).
 
     %% psf size
     size_x = 20;
@@ -265,9 +459,9 @@ Example can be found at `example_2d_shift()`_.
     %% figure
     figure;
     subplot(121); imagesc(x, y, psf);
-    axis image; title('PSF');
+    axis image; title('Original');
     subplot(122); imagesc(x_shifted, y_shifted, psf_shifted);
-    axis image; title('shifted PSF');
+    axis image; title('Shifted');
     colormap('hot');
 
     end

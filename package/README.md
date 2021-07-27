@@ -20,23 +20,23 @@ Push to Github afterwards (you can add a Git tag).
 
 ## Convert Documentation from restructured text to html/latex
 
-Use documentation_create_latex.bat in this folder or do it manually using sphinx and docs/make.bat.
+Use sphinx and docs/make.bat with parameters html and latex.
 
 ## Use CMAKE to generate the project
 
-- Build directory for MSVC14 Win64 is BUILD_BASE_PATH/VC14x64
-- Build directory for MSVC14 Win32 is BUILD_BASE_PATH/VC14x32
+- Build directory for MSVC16 Win64 is BUILD_BASE_PATH/VC16x64
+- Build directory for MSVC16 Win32 is BUILD_BASE_PATH/VC16x32
 - Matlab, Python, Latex (e.g. Miktex) must be available
 
 See also [Build from sources](https://gpuspline.readthedocs.io/en/latest/installation.html#building-from-source-code) for instructions.
 
 ## Build for Win32 and Win64
 
-Everything should run through and the tests should execute successfully.
+Build with single precision. Everything should run through and the tests should execute successfully.
 
 - Configuration RelWithDebInfo is used for all builds!
-- With MSVC14 Win64 build target PYTHON_WHEEL, MATLAB_GPUFIT_PACKAGE
-- With MSVC14 Win32 build target PYTHON_WHEEL, MATLAB_GPUFIT_PACKAGE
+- With MSVC16 Win64 build target PYTHON_WHEEL, MATLAB_GPUFIT_PACKAGE
+- With MSVC16 Win32 build target PYTHON_WHEEL, MATLAB_GPUFIT_PACKAGE
 - On one of them also build target DOCUMENTATION_PDFLATEX (SOURCE_BASE_PATH\docs\_build\latex\Gpuspline.pdf will be created from Gpuspline.tex at the same location)
 
 ## Run the examples for the Bindings

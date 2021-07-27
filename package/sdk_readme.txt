@@ -7,6 +7,6 @@ Compiled with the Microsoft Visual Studio 2019 C++ compiler.
 
 Folder include contains the spline.h header file representing the C API.
 
-Folder win32 contains the 32 bit compiled dynamic link library and import library.
+Folder win32 contains the 32 bit compiled dynamic link library (built in single precision) and import library.
 
-Folder win64 contains the 64 bit compiled dynamic link library and import library.
+Folder win64 contains the 64 bit compiled dynamic link library (built in single precision) and import library.

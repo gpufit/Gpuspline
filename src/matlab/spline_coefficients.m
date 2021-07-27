@@ -1,5 +1,5 @@
 function [coefficients, time] = spline_coefficients(data)
-% Calculates spline coefficients from given data
+% Calculates spline coefficients from given 1-3D data
 
 % Wrapper around the spline mex file.
 

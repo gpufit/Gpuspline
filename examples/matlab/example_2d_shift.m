@@ -1,4 +1,8 @@
 function example_2d_shift()
+% Example of the Matlab binding of the Gpuspline library for the
+% calculation of multidimensional cubic splines.
+%
+% 2D data is interpolated (shifted).
 
 %% psf size
 size_x = 20;
@@ -26,9 +30,9 @@ psf_shifted = spline_values(coefficients, x_shifted, y_shifted);
 %% figure
 figure;
 subplot(121); imagesc(x, y, psf);
-axis image; title('PSF');
+axis image; title('Original');
 subplot(122); imagesc(x_shifted, y_shifted, psf_shifted);
-axis image; title('shifted PSF');
+axis image; title('Shifted');
 colormap('hot');
 
 end
