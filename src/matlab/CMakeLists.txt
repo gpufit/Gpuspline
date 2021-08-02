@@ -1,8 +1,8 @@
 
-# Matlab spline binding
+# Matlab Gpuspline binding
 
 if( NOT Matlab_FOUND )
-  message( STATUS "No suitable Matlab and/or MX_Library version found - skipping spline Matlab binding!" )
+  message( STATUS "No suitable Matlab and/or MX_Library version found - skipping Gpuspline Matlab binding!" )
   return()
 endif()
 
@@ -64,6 +64,7 @@ set( package_files
   "${CMAKE_CURRENT_SOURCE_DIR}/spline_coefficients.m"
   "${CMAKE_CURRENT_SOURCE_DIR}/spline_values.m"
   "${CMAKE_CURRENT_SOURCE_DIR}/spline_interpolate.m"
+  "${CMAKE_CURRENT_SOURCE_DIR}/README.txt"
 )
 
 set( binary_spline $<TARGET_FILE:splines> )
@@ -84,7 +85,7 @@ add_custom_target( MATLAB_SPLINE_PACKAGE ALL
         copy_if_different ${binary_interpolation_mex} ${build_directory}
     COMMAND ${CMAKE_COMMAND} -E
         copy_if_different ${binary_spline_values_mex} ${build_directory}
-    COMMENT "Creating splines Matlab package"
+    COMMENT "Creating Gpusplines Matlab package"
 )
 
 set_property( TARGET MATLAB_SPLINE_PACKAGE PROPERTY FOLDER CMakePredefinedTargets )

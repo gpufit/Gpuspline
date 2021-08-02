@@ -46,25 +46,20 @@ set BUILD_BASE=%1
 set VERSION=%2
 set SOURCE_BASE=%3
 
-set OUTPUT_NAME=Gpuspline_%VERSION%_win32_win64_build%DATECODE%
+set OUTPUT_NAME=Gpuspline_%VERSION%_build%DATECODE%
 set ROOT_INSTALL=%BUILD_BASE%\%OUTPUT_NAME%
 set OUTPUT_ZIP=%BUILD_BASE%\%OUTPUT_NAME%.zip
 
 set PYTHON_INSTALL=%ROOT_INSTALL%\python
-set x32_MATLAB_INSTALL=%ROOT_INSTALL%\matlab32
-set x64_MATLAB_INSTALL=%ROOT_INSTALL%\matlab64
+set x64_MATLAB_INSTALL=%ROOT_INSTALL%\matlab
 set SDK_INSTALL_ROOT=%ROOT_INSTALL%\Gpuspline_sdk
 
 set x64_BUILD=%BUILD_BASE%\VC16x64\RelWithDebInfo
 set x64_BUILD_LIB=%BUILD_BASE%\VC16x64\src\RelWithDebInfo
-set x32_BUILD=%BUILD_BASE%\VC16x32\RelWithDebInfo
-set x32_BUILD_LIB=%BUILD_BASE%\VC16x32\src\RelWithDebInfo
 
 set x64_PYTHON_BUILD=%x64_BUILD%\pyGpuspline\dist
-set x32_PYTHON_BUILD=%x32_BUILD%\pyGpuspline\dist
 
 set x64_MATLAB_BUILD=%x64_BUILD%\matlab
-set x32_MATLAB_BUILD=%x32_BUILD%\matlab
 
 set EXAMPLES_SOURCE=%SOURCE_BASE%\examples
 set PYTHON_SOURCE=%SOURCE_BASE%\src\python
@@ -87,7 +82,7 @@ mkdir "%ROOT_INSTALL%"
 REM copy main readme (is markdown, written as txt) and license
 
 copy "%SOURCE_BASE%\README.md" "%ROOT_INSTALL%\README.txt"
-copy "%SOURCE_BASE%\LICENSE.txt" "%ROOT_INSTALL%"
+copy "%SOURCE_BASE%\LICENSE.md" "%ROOT_INSTALL%\License.txt"
 
 REM copy manual
 
@@ -102,20 +97,12 @@ REM copy Python packages
 echo collect python
 mkdir "%PYTHON_INSTALL%"
 copy "%x64_PYTHON_BUILD%\pyGpuspline-%VERSION%-py2.py3-none-any.whl" "%PYTHON_INSTALL%\pyGpuspline-%VERSION%-py2.py3-none-win_amd64.whl"
-copy "%x32_PYTHON_BUILD%\pyGpuspline-%VERSION%-py2.py3-none-any.whl" "%PYTHON_INSTALL%\pyGpuspline-%VERSION%-py2.py3-none-win32.whl"
 copy "%PYTHON_SOURCE%\README.txt" "%PYTHON_INSTALL%"
 xcopy "%EXAMPLES_SOURCE%\python" "%PYTHON_INSTALL%\examples" /i /q
 
-REM copy Matlab 32 bit
+REM copy Matlab
 
-echo collect matlab32
-mkdir "%x32_MATLAB_INSTALL%"
-xcopy "%x32_MATLAB_BUILD%" "%x32_MATLAB_INSTALL%" /q
-xcopy "%EXAMPLES_SOURCE%\matlab" "%x32_MATLAB_INSTALL%\examples" /i /q
-
-REM copy Matlab 64 bit
-
-echo collect matlab64
+echo collect matlab
 mkdir "%x64_MATLAB_INSTALL%"
 xcopy "%x64_MATLAB_BUILD%" "%x64_MATLAB_INSTALL%" /q
 xcopy "%EXAMPLES_SOURCE%\matlab" "%x64_MATLAB_INSTALL%\examples" /i /q
@@ -128,10 +115,6 @@ copy "%SDK_README_SOURCE%" "%SDK_INSTALL_ROOT%\README.txt"
 
 mkdir "%SDK_INSTALL_ROOT%\include"
 copy "%SOURCE_BASE%\src\spline.h" "%SDK_INSTALL_ROOT%\include"
-
-mkdir "%SDK_INSTALL_ROOT%\win32"
-copy "%x32_BUILD%\splines.dll" "%SDK_INSTALL_ROOT%\win32"
-copy "%x32_BUILD_LIB%\splines.lib" "%SDK_INSTALL_ROOT%\win32"
 
 mkdir "%SDK_INSTALL_ROOT%\win64"
 copy "%x64_BUILD%\splines.dll" "%SDK_INSTALL_ROOT%\win64"

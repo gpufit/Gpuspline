@@ -1,9 +1,9 @@
 """
-    Python binding for Gpuspline, a library for the calculation of multidimensional cubic splines
-    See https://github.com/gpufit/Gpuspline
+Python binding for Gpuspline, a library for the calculation of multidimensional cubic splines
+See https://github.com/gpufit/Gpuspline
 
-    The binding is based on ctypes.
-    See https://docs.python.org/3.5/library/ctypes.html, http://www.scipy-lectures.org/advanced/interfacing_with_c/interfacing_with_c.html
+The binding is based on ctypes.
+See https://docs.python.org/3.5/library/ctypes.html, http://www.scipy-lectures.org/advanced/interfacing_with_c/interfacing_with_c.html
 """
 
 import os
@@ -23,10 +23,22 @@ else:
 lib = cdll.LoadLibrary(lib_path)
 
 
+def convert_ndarray(x):
+    """
+    We may get lists instead of NumPy arrays from outside. Just silently convert them to (single-valued) NumPy arrays.
+    :param x: List or NumPy array
+    :return: If x was a NumPy array just returns itself, otherwise a NumPy array initialized with x.
+    """
+    if not isinstance(x, np.ndarray):
+        x = np.array(x, dtype=np.float32)
+    return x
+
+
 def spline_coefficients(data):
     """
-
+    Calculates spline coefficients from given 1-3D data
     """
+    data = convert_ndarray(data)
     if data.dtype != np.float32:
         raise RuntimeError('Type of data is not single!')
     size = data.shape
@@ -71,12 +83,19 @@ def spline_coefficients(data):
 
 def spline_interpolate(data, x, y=None, z=None):
     """
+    Interpolates 1-3D data at positions x, y, z.
 
+    Note: Internally calls spline_coefficients first to create a spline representation
+    and then spline_value to obtain interpolated values. If repeated interpolation
+    of the same data set is needed, it's better to call spline_coefficients only once
+    and then use spline_value instead of this function.
     """
+    data = convert_ndarray(data)
     if data.dtype != np.float32:
         raise RuntimeError('Type of data is not single!')
     size = data.shape
 
+    x = convert_ndarray(x)
     if x.dtype != np.float32:
         raise RuntimeError('Type of x values is not single!')
 
@@ -89,6 +108,7 @@ def spline_interpolate(data, x, y=None, z=None):
     elif z is None:
         # 2D case
         number_dimensions = 2
+        y = convert_ndarray(y)
         if y.dtype != np.float32:
             raise RuntimeError('Type of y values is not single!')
         new_size_y = y.size
@@ -96,6 +116,7 @@ def spline_interpolate(data, x, y=None, z=None):
     else:
         # 3D case
         number_dimensions = 3
+        z = convert_ndarray(z)
         if z.dtype != np.float32:
             raise RuntimeError('Type of z values is not single!')
         new_size_y = y.size
@@ -151,11 +172,19 @@ def spline_interpolate(data, x, y=None, z=None):
 
 def spline_values(coefficients, x, y=None, z=None):
     """
+    Calculates spline values given a spline representation and x, y and z values.
 
+    y and z parameter is optional (only if you want 2D/3D values)
+
+    Note: x, y, z are a range of values along their coordinate axis and the total
+    number is the cartesian product of them all!
     """
+    # if not numpy arrays, convert to them
+    coefficients = convert_ndarray(coefficients)
     if coefficients.dtype != np.float32:
         raise RuntimeError('Type of coefficients is not single!')
 
+    x = convert_ndarray(x)
     if x.dtype != np.float32:
         raise RuntimeError('Type of x values is not single!')
 
@@ -169,6 +198,7 @@ def spline_values(coefficients, x, y=None, z=None):
     elif z is None:
         # 2D case
         number_dimensions = 2
+        y = convert_ndarray(y)
         if y.dtype != np.float32:
             raise RuntimeError('Type of y values is not single!')
         values_size_y = y.size
@@ -177,6 +207,7 @@ def spline_values(coefficients, x, y=None, z=None):
     else:
         # 3D case
         number_dimensions = 3
+        z = convert_ndarray(z)
         if z.dtype != np.float32:
             raise RuntimeError('Type of z values is not single!')
         values_size_y = y.size

@@ -7,6 +7,7 @@
 #define PRINT_MSG _snprintf_s
 #else
 #define PRINT_MSG std::snprintf
+#define PRINT_MSG std::snprintf
 #endif
 
 #ifdef SPLINE_DOUBLE
@@ -17,7 +18,7 @@
 #define MX_REAL mxSINGLE_CLASS
 #define TOLERANCE_PRECISION_MESSAGE()\
     mexErrMsgIdAndTxt("Gpuspline:Mex", "tolerance is not a single");
-#endif // GPUFIT_DOUBLE
+#endif // GPUSPLINE_DOUBLE
 
 void mexFunction(
     int          nlhs,
