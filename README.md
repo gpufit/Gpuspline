@@ -16,15 +16,15 @@ The latest Gpuspline binary release, supporting Windows 32-bit and 64-bit machin
 
 [![Documentation Status](https://readthedocs.org/projects/gpuspline/badge/?version=latest)](https://gpuspline.readthedocs.io/en/latest/?badge=latest)
 
-Documentation for the Spline analysis library may be found online ([latest documentation](http://xxx.readthedocs.io/en/latest/?badge=latest)), and also as a PDF file in the binary distribution of Spline analysis.
+Documentation for the Spline analysis library may be found online ([latest documentation](https://gpuspline.readthedocs.io/en/latest/), and also as a PDF file in the binary distribution of Spline analysis.
 
 ### Building Gpuspline from source code
 
-Instructions for building Gpuspline are found in the documentation: [Building from source code](https://github.com/xxx/blob/master/docs/installation.rst).
+Instructions for building Gpuspline are found in the documentation: [Building from source code](https://github.com/gpufit/Gpuspline/blob/master/docs/installation.rst).
 
 ## Examples
 
-Examples for using Gpuspline in Matlab and Python are in the [examples](examples) folder. Examples using splines to perform fitting are located in the examples section of [Gpufit](https://github.com/gpufit/Gpufit).
+Examples for using Gpuspline in Matlab and Python are in the [examples](https://github.com/gpufit/Gpuspline/tree/master/examples) folder. Examples using splines to perform fitting are located in the examples section of [Gpufit](https://github.com/gpufit/Gpufit).
 
 ## Authors
 

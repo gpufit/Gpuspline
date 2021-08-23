@@ -2,7 +2,7 @@
    sphinx-quickstart on Thu Aug  8 11:39:54 2019.
 
 Gpuspline documentation
-=============================
+=======================
 
 .. toctree::
    :maxdepth: 2
