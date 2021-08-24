@@ -7,9 +7,8 @@ Installation and Testing
 Building from source code
 +++++++++++++++++++++++++
 
-This section describes how to build Gpuspline from source code. Note that as of
-the initial release of Gpuspline, the source code has been tested only with the
-Microsoft Visual Studio compiler.
+This section describes how to build Gpuspline from source code. The source code has been build successfully and
+been tested with the Microsoft Visual Studio compiler (2013 - 2019) on Windows 10 as well as with gcc 9.3 on Ubuntu 20.04.
 
 Prerequisites
 -------------
@@ -24,8 +23,8 @@ The following tools are required in order to build Gpuspline from source.
 *Optional*
 
 * MATLAB_ if building the MATLAB bindings
-* Python_ if building the Python bindings
-* PDF Latex installation (like Miktex) if converting the documentation from Latex to PDF
+* Python_ if building the Python bindings (and for producing Latex and HTML documentation output)
+* PDF Latex installation (like Miktex on Windows or texlive-binaries on Linux) if converting the documentation from Latex to PDF
 
 Source code availability
 ------------------------
@@ -64,7 +63,7 @@ have been set up as specified above.
 .. code-block:: bash
 
     cd C:\Sources\Gpuspline-build-64
-    cmake -G "Visual Studio 14 2015 Win64" C:\Sources\Gpuspline
+    cmake -G "Visual Studio 16 2019 Win64" C:\Sources\Gpuspline
 
 Note that in this example the *-G* flag has been used to specify the
 64-bit version of the Visual Studio 14 compiler. This flag should be changed
@@ -106,11 +105,11 @@ The following commands can be executed to build Gpuspline on Linux.
 
 .. code-block:: bash
 
-...git clone https://github.com/gpufit/Gpuspline.git Gpuspline
-...mkdir Gpuspline-build
-...cd Gpuspline-build
-...cmake -DCMAKE_BUILD_TYPE=RELEASE ../Gpuspline
-...make
+    git clone https://github.com/gpufit/Gpuspline.git Gpuspline
+    mkdir Gpuspline-build
+    cd Gpuspline-build
+    cmake -DCMAKE_BUILD_TYPE=RELEASE ../Gpuspline
+    make
 
 To install the Python package
 

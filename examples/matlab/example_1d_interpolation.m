@@ -1,8 +1,10 @@
 function example_1d_interpolation()
 % Example of the Matlab binding of the Gpuspline library for the
 % calculation of multidimensional cubic splines.
+% https://github.com/gpufit/Gpuspline
 %
 % Interpolates 1D data. The data is upsampled, cut, stretched and shifted.
+% https://gpuspline.readthedocs.io/en/latest/bindings.html#matlab
 
 % input data
 y = single([0,0,0.2,1,1.1,1.3,2,2.5,3,4,4.25,4,3,2.5,2,1.3,1.1,1,0.2,0,0])';
@@ -20,7 +22,7 @@ xq = x(1):sampling_factor:x(end);
 xq = xq(xq >= edge & xq <= max(xq)-edge);
 xq = xq / width;
 xq = xq+(center_index*(1-1/width))-shift;
-yq = spline_interpolate(y,xq);
+yq = spline_interpolate(y, xq); % call to the spline library
 
 % figure
 figure();

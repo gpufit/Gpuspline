@@ -1,6 +1,8 @@
 """
 Example of the Python binding of the Gpuspline library for the
 calculation of multidimensional cubic splines.
+https://github.com/gpufit/Gpuspline
+https://gpuspline.readthedocs.io/en/latest/bindings.html#python
 
 Interpolates 1D data. The data is upsampled, cut, stretched and shifted.
 
@@ -28,7 +30,7 @@ if __name__ == '__main__':
     xq = xq[np.logical_and(xq >= edge, xq <= np.amax(xq) - edge)]
     xq /= width
     xq += center * (1 - 1 / width) - shift
-    yq = gs.spline_interpolate(y, xq)
+    yq = gs.spline_interpolate(y, xq)  # call to the spline library
 
     # show result
     fig, ax = plt.subplots()

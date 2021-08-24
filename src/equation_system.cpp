@@ -1,6 +1,8 @@
 #include "spline_classes.h"
 #include "equation_system.h"
 
+// TODO better documentation of what each function does and requires and in which order these functions should be called
+
 EquationSystem::EquationSystem(std::size_t const N) :
     N_(N),
     matrix_(N * N),

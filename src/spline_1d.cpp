@@ -65,7 +65,7 @@ REAL Spline1D::calculate_value(REAL const x)
     // determine interval index
     int i = static_cast<std::size_t>(std::floor(x));
 
-    // adjust i to its bounds
+    // adjust i to its bounds TODO this behavior should be documented (constant extrapolation)
     i = i >= 0 ? i : 0;
     i = i < static_cast<int>(n_intervals_) ? i : static_cast<int>(n_intervals_) - 1;
 

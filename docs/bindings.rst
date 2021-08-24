@@ -4,7 +4,7 @@
 External bindings
 =================
 
-This sections describes the Gpuspline bindings to other programming languages. The bindings (to Python, Matlab or Java) aim to
+This sections describes the Gpuspline bindings to other programming languages. The bindings to Python and Matlab aim to
 emulate the :ref:`c-interface` as closely as possible.
 
 Python
@@ -16,7 +16,7 @@ that call the C interface of the Gpuspline library. In general the routines expe
 Installation
 ++++++++++++
 
-Wheel files for Python on Windows 32/64 are included in the binary package. NumPy is required.
+Wheel files for Python (x64) on Windows are included in the binary package. NumPy is required.
 
 Install the wheel file with
 
@@ -27,8 +27,8 @@ Install the wheel file with
 Python Interface
 ++++++++++++++++
 
-The Python interface is a thin wrapper around the C interface. Please see the documentation of the
-C interface for more details on the interpretation of input and output parameters.
+The Python interface is a thin wrapper around the C interface. Please see the API documentation of the
+:ref:`c-interface` for more details on the interpretation of input and output parameters.
 
 spline_coefficients
 ...................
@@ -89,6 +89,8 @@ upsampled, cut, stretched and shifted. The example can be found at `example_1d_i
     """
     Example of the Python binding of the Gpuspline library for the
     calculation of multidimensional cubic splines.
+    https://github.com/gpufit/Gpuspline
+    https://gpuspline.readthedocs.io/en/latest/bindings.html#python
 
     Interpolates 1D data. The data is upsampled, cut, stretched and shifted.
 
@@ -116,7 +118,7 @@ upsampled, cut, stretched and shifted. The example can be found at `example_1d_i
         xq = xq[np.logical_and(xq >= edge, xq <= np.amax(xq) - edge)]
         xq /= width
         xq += center * (1 - 1 / width) - shift
-        yq = gs.spline_interpolate(y, xq)
+        yq = gs.spline_interpolate(y, xq)  # call to the spline library
 
         # show result
         fig, ax = plt.subplots()
@@ -138,6 +140,8 @@ The example can be found at `example_2d_resampling.py`_.
     """
     Example of the Matlab binding of the Gpuspline library for the
     calculation of multidimensional cubic splines.
+    https://github.com/gpufit/Gpuspline
+    https://gpuspline.readthedocs.io/en/latest/bindings.html#python
 
     2D data is interpolated (up- and downsampled and shifted).
 
@@ -151,7 +155,7 @@ The example can be found at `example_2d_resampling.py`_.
 
     def calculate_psf(x, y, p):
         """
-
+        Calculates an elliptic 2D Gaussian peak function.
         """
         sx = p[3] - 0.2
         sy = p[3] + 0.2
@@ -186,16 +190,16 @@ The example can be found at `example_2d_resampling.py`_.
         psf = calculate_psf(x, y, psf_parameters)
 
         # calculate spline coefficients
-        coefficients = gs.spline_coefficients(psf)
+        coefficients = gs.spline_coefficients(psf)  # call to spline library
 
         # generate upsampled PSF
-        psf_up = gs.spline_values(coefficients, x_up, y_up)
+        psf_up = gs.spline_values(coefficients, x_up, y_up)  # call to spline library
 
         # generate downsampled PSF
-        psf_down = gs.spline_values(coefficients, x_down, y_down)
+        psf_down = gs.spline_values(coefficients, x_down, y_down)  # call to spline library
 
         # generate shifted PSF
-        psf_shift = gs.spline_values(coefficients, x_shift, y_shift)
+        psf_shift = gs.spline_values(coefficients, x_shift, y_shift)  # call to spline library
 
         # display results
         fig, axs = plt.subplots(2, 2)
@@ -216,7 +220,7 @@ Matlab
 ------
 
 The Matlab binding for Gpuspline consists of Matlab scripts (spline_coefficients.m, spline_values.m,
-spline_interpolate.m). These scripts check the input data and call the C interfaces of the Gpuspline library, via
+spline_interpolate.m). These scripts check the input data and call the :ref:`c-interface` of the Gpuspline library, via
 compiled .mex files. Please note, that before using the Matlab binding, the path to the .m and .mex files must be added
 to the Matlab path.
 
@@ -355,9 +359,10 @@ Example can be found at `example_2d_resampling.m`_.
     function example_2d_resampling()
     % Example of the Matlab binding of the Gpuspline library for the
     % calculation of multidimensional cubic splines.
+    % https://github.com/gpufit/Gpuspline
     %
     % 2D data is interpolated (up- and downsampled).
-
+    % https://gpuspline.readthedocs.io/en/latest/bindings.html#matlab
 
     %% psf size
     size_x = 15;
@@ -430,8 +435,10 @@ Example can be found at `example_2d_shift.m`_.
     function example_2d_shift()
     % Example of the Matlab binding of the Gpuspline library for the
     % calculation of multidimensional cubic splines.
+    % https://github.com/gpufit/Gpuspline
     %
     % 2D data is interpolated (shifted).
+    % https://gpuspline.readthedocs.io/en/latest/bindings.html#matlab
 
     %% psf size
     size_x = 20;

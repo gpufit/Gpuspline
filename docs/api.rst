@@ -18,7 +18,8 @@ calculate_coefficients_1d()
 +++++++++++++++++++++++++++
 
 This function calculates 1D cubic spline coefficients for intervals between data points of the
-input data. Every interval is represented by 4 coefficients.
+input data. Every interval is represented by 4 coefficients. The number of spline intervals is one less than the number of
+data points.
 
 .. code-block:: cpp
 
@@ -46,7 +47,7 @@ Description of input parameters
 Description of output parameters
 ................................
 
-:coefficients: calculated spline coefficients
+:coefficients: Calculated spline coefficients, ordered first by spline interval and then by increasing coefficient order (in x).
 
     :type: REAL *
     :length: 4 * (data_size_x - 1)
@@ -55,7 +56,8 @@ calculate_coefficients_2d()
 +++++++++++++++++++++++++++
 
 This function calculates 2D cubic spline coefficients for intervals between data points of the
-input data. Every interval is represented by 16 coefficients.
+input data. Every interval is represented by 16 coefficients. The number of spline intervals is the product of the dimensions
+of the input data array reduced by 1 in each dimension.
 
 .. code-block:: cpp
     
@@ -88,7 +90,7 @@ Description of input parameters
 Description of output parameters
 ................................
 
-:coefficients: calculated spline coefficients
+:coefficients: Calculated spline coefficients, ordered first by the spline intervals (in x and then y) and then by increasing orders of the spline coefficients (first in x and then in y).
 
     :type: REAL *
     :length: 16 * (data_size_x - 1) * (data_size_y - 1)
@@ -97,7 +99,8 @@ calculate_coefficients_3d()
 +++++++++++++++++++++++++++
 
 This function calculates 3D cubic spline coefficients for intervals between data points of the
-input data. Every interval is represented by 64 coefficients.
+input data. Every interval is represented by 64 coefficients. The number of spline intervals is the product of the dimensions
+of the input data array reduced by 1 in each dimension.
 
 .. code-block:: cpp
 
@@ -135,7 +138,7 @@ Description of input parameters
 Description of output parameters
 ................................
 
-:coefficients: calculated spline coefficients
+:coefficients: Calculated spline coefficients, ordered first by the spline intervals (in x,then y, then z) and then by increasing orders of the spline coefficients (first in x, then in y, then in z).
 
     :type: REAL *
     :length: 64 * (data_size_x - 1) * (data_size_y - 1) * (data_size_z - 1)
@@ -172,7 +175,7 @@ Description of input parameters
 
     :type: size_t
 
-:x_values: Pointer to independent variable values
+:x_values: Pointer to independent variable values, starting with 0 (1st spline interval, covering the distance between 1st and 2nd data point) and going to N-1 for N data points.
 
     :type: REAL *
     :length: new_size_x
@@ -182,7 +185,7 @@ Description of input parameters
 Description of output parameters
 ................................
 
-:interpolated_data: Pointer to output data values
+:interpolated_data: Pointer to output data values. Outside of the valid spline interval positions, the values returned will be constant (closest data values).
 
     :type: REAL *
     :length: new_size_x
@@ -230,12 +233,12 @@ Description of input parameters
 
     :type: size_t
 
-:x_values: Pointer to independent variable x values
+:x_values: Pointer to independent variable x values, starting with 0 (1st spline interval, covering the distance between 1st and 2nd data point) and going to N-1 for N data points in x.
 
     :type: REAL *
     :length: new_size_x
 
-:y_values: Pointer to independent variable y values
+:y_values: Pointer to independent variable y values, starting with 0 (1st spline interval, covering the distance between 1st and 2nd data point) and going to M-1 for M data points in y.
 
     :type: REAL *
     :length: new_size_y
@@ -245,7 +248,7 @@ Description of input parameters
 Description of output parameters
 ................................
 
-:interpolated_data: Pointer to output data values
+:interpolated_data: Pointer to output data values. Outside of the valid spline interval positions, the values returned will be constant (closest data values).
 
     :type: REAL *
     :length: new_size_x * new_size_y
@@ -304,17 +307,17 @@ Description of input parameters
 
     :type: size_t
 
-:x_values: Pointer to independent variable x values
+:x_values: Pointer to independent variable x values, starting with 0 (1st spline interval, covering the distance between 1st and 2nd data point) and going to N-1 for N data points in x.
 
     :type: REAL *
     :length: new_size_x
 
-:y_values: Pointer to independent variable y values
+:y_values: Pointer to independent variable y values, starting with 0 (1st spline interval, covering the distance between 1st and 2nd data point) and going to M-1 for M data points in y.
 
     :type: REAL *
     :length: new_size_y
 
-:z_values: Pointer to independent variable z values
+:z_values: Pointer to independent variable z values, starting with 0 (1st spline interval, covering the distance between 1st and 2nd data point) and going to K-1 for K data points in z.
 
     :type: REAL *
     :length: new_size_z
@@ -324,7 +327,7 @@ Description of input parameters
 Description of output parameters
 ................................
 
-:interpolated_data: Pointer to output data values
+:interpolated_data: Pointer to output data values. Outside of the valid spline interval positions, the values returned will be constant (closest data values).
 
     :type: REAL *
     :length: new_size_x * new_size_y * new_size_z
@@ -362,7 +365,7 @@ Description of input parameters
 
     :type: size_t
 
-:x_values: Pointer to independent variable values
+:x_values: Pointer to independent variable values, starting with 0 (1st spline interval, covering the distance between 1st and 2nd data point) and going to N-1 for N data points in x.
 
     :type: REAL *
     :length: values_size_x
@@ -372,7 +375,7 @@ Description of input parameters
 Description of output parameters
 ................................
 
-:spline_values: Pointer to output data values
+:spline_values: Pointer to output data values. Outside of the valid spline interval positions, the values returned will be constant (closest data values).
 
     :type: REAL *
     :length: values_size_x
@@ -421,12 +424,12 @@ Description of input parameters
 
     :type: size_t
 
-:x_values: Pointer to independent variable x values
+:x_values: Pointer to independent variable x values, starting with 0 (1st spline interval, covering the distance between 1st and 2nd data point) and going to N-1 for N data points in x.
 
     :type: REAL *
     :length: values_size_x
 
-:y_values: Pointer to independent variable y values
+:y_values: Pointer to independent variable y values, starting with 0 (1st spline interval, covering the distance between 1st and 2nd data point) and going to M-1 for M data points in y.
 
     :type: REAL *
     :length: values_size_y
@@ -436,7 +439,7 @@ Description of input parameters
 Description of output parameters
 ................................
 
-:spline_values: Pointer to output data values
+:spline_values: Pointer to output data values. Outside of the valid spline interval positions, the values returned will be constant (closest data values).
 
     :type: REAL *
     :length: values_size_x * values_size_y
@@ -496,17 +499,17 @@ Description of input parameters
 
     :type: size_t
 
-:x_values: Pointer to independent variable x values
+:x_values: Pointer to independent variable x values, starting with 0 (1st spline interval, covering the distance between 1st and 2nd data point) and going to N-1 for N data points in x.
 
     :type: REAL *
     :length: values_size_x
 
-:y_values: Pointer to independent variable y values
+:y_values: Pointer to independent variable y values, starting with 0 (1st spline interval, covering the distance between 1st and 2nd data point) and going to M-1 for M data points in y.
 
     :type: REAL *
     :length: values_size_y
 
-:z_values: Pointer to independent variable z values
+:z_values: Pointer to independent variable z values, starting with 0 (1st spline interval, covering the distance between 1st and 2nd data point) and going to K-1 for K data points in z.
 
     :type: REAL *
     :length: values_size_z
@@ -516,7 +519,7 @@ Description of input parameters
 Description of output parameters
 ................................
 
-:spline_values: Pointer to output data values
+:spline_values: Pointer to output data values. Outside of the valid spline interval positions, the values returned will be constant (closest data values).
 
     :type: REAL *
     :length: values_size_x * values_size_y * values_size_z

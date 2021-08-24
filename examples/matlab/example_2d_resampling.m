@@ -1,9 +1,10 @@
 function example_2d_resampling()
 % Example of the Matlab binding of the Gpuspline library for the
 % calculation of multidimensional cubic splines.
+% https://github.com/gpufit/Gpuspline
 %
 % 2D data is interpolated (up- and downsampled).
-
+% https://gpuspline.readthedocs.io/en/latest/bindings.html#matlab
 
 %% psf size
 size_x = 15;

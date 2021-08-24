@@ -1,6 +1,8 @@
 """
 Example of the Matlab binding of the Gpuspline library for the
 calculation of multidimensional cubic splines.
+https://github.com/gpufit/Gpuspline
+https://gpuspline.readthedocs.io/en/latest/bindings.html#python
 
 2D data is interpolated (up- and downsampled and shifted).
 
@@ -14,7 +16,7 @@ import pygpuspline.gpuspline as gs
 
 def calculate_psf(x, y, p):
     """
-
+    Calculates an elliptic 2D Gaussian peak function.
     """
     sx = p[3] - 0.2
     sy = p[3] + 0.2
@@ -49,16 +51,16 @@ if __name__ == '__main__':
     psf = calculate_psf(x, y, psf_parameters)
 
     # calculate spline coefficients
-    coefficients = gs.spline_coefficients(psf)
+    coefficients = gs.spline_coefficients(psf)  # call to spline library
 
     # generate upsampled PSF
-    psf_up = gs.spline_values(coefficients, x_up, y_up)
+    psf_up = gs.spline_values(coefficients, x_up, y_up)  # call to spline library
 
     # generate downsampled PSF
-    psf_down = gs.spline_values(coefficients, x_down, y_down)
+    psf_down = gs.spline_values(coefficients, x_down, y_down)  # call to spline library
 
     # generate shifted PSF
-    psf_shift = gs.spline_values(coefficients, x_shift, y_shift)
+    psf_shift = gs.spline_values(coefficients, x_shift, y_shift)  # call to spline library
 
     # display results
     fig, axs = plt.subplots(2, 2)
