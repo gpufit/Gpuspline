@@ -6,8 +6,6 @@ Calculates spline coefficients and interpolated data values in 1D to 3D.
 
 Homepage: [github.com/gpufit/Gpuspline](https://github.com/gpufit/Gpuspline)
 
-## Quick start instructions
-
 ## Binary distribution
 
 The latest Gpuspline binary release, supporting Windows 32-bit and 64-bit machines, can be found on the [release page](https://github.com/gpufit/Gpuspline/releases).

@@ -14,8 +14,4 @@ pip install --no-index --find-links=LocalPathToWheelFile pyGpuspline
 
 Examples
 
-See examples folder. Additionally require matplotlib.
-
-Troubleshooting
-
-A common reason for the error message 'CUDA driver version is insufficient for CUDA runtime version' is an outdated Nvidia graphics driver.
+See /examples/python folder. Additionally require matplotlib and a matplotlib backend (tk or pyqt5).

@@ -111,18 +111,39 @@ The following commands can be executed to build Gpuspline on Linux.
     cmake -DCMAKE_BUILD_TYPE=RELEASE ../Gpuspline
     make
 
+Run the test with
+
+.. code-block:: bash
+
+    ./splines_tests
+
 To install the Python package
 
 .. code-block:: bash
 
    cd pyGpuspline/dist
    pip install pyGpuspline-X.Y.Z-py2.py3-none-any.whl
+
+Finally run the examples with (matplotlib needs a backend, for example pyqt5)
+
+.. code-block:: bash
+
+    pip install matplotlib
+    pip install pyqt5
+    python ../../../Gpuspline/examples/python/example_1d_interpolation.py
+    python ../../../Gpuspline/examples/python/example_2d_resampling.py
    
-To run the Matlab package you need to tell Matlab to use a newer version of the C++ standard library
+Optional: Depending on the gcc and the Matlab versions, to run the Matlab package you may need to tell Matlab to use a
+newer version of the C++ standard library
 
 .. code-block:: bash
 
    export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6
+
+Start Matlab.
+
+.. code-block:: bash
+
    matlab
 
 Then in Matlab add the matlab output directory to the path and execute some examples.
@@ -130,5 +151,5 @@ Then in Matlab add the matlab output directory to the path and execute some exam
 .. code-block:: bash
 
    addpath('XX/Gpuspline-build/matlab');
-   cd('XX/Gpuspline/src/matlab/examples');
+   cd('XX/Gpuspline/src/examples/matlab');
    example_1d_interpolation();
