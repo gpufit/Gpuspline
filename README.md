@@ -18,7 +18,7 @@ Documentation for the Spline analysis library may be found online ([latest docum
 
 ### Building Gpuspline from source code
 
-Instructions for building Gpuspline are found in the documentation: [Building from source code](https://github.com/gpufit/Gpuspline/blob/master/docs/installation.rst).
+Instructions for building Gpuspline are found in the documentation: [Building from source code](https://github.com/gpufit/Gpuspline/blob/master/docs/installation.rst) and also in the file BUILD_INSTRUCTIONS.txt.
 
 ## Examples
 
