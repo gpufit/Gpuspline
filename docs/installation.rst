@@ -69,15 +69,15 @@ For this example, the source directory might be *C:\\Sources\\Gpuspline*, and th
 build directory might be *C:\\Sources\\Gpuspline-build-64*.
 
 Next, click the "Configure" button, and select the desired compiler from the drop 
-down list (e.g. Visual Studio 16 2019).  Under "Optional platform for Generator), 
-select the desired architecture (e.g. "x64" to compile 64-bit binaries).
+down list (e.g. Visual Studio 16 2019).  Under *Optional platform for Generator*, 
+select the desired architecture (e.g. *x64* to compile 64-bit binaries).
 
 Once configuration is complete, CMake will have automatically found the Matlab 
-installation, and the installation directories will be listed in the "NAME" and 
-"VALUE" columns.  If the Matlab installation was not found, the entries in the 
-"VALUE" column can be manually edited.
+installation, and the installation directories will be listed in the *NAME* and 
+*VALUE* columns.  If the Matlab installation was not found, the entries in the 
+*VALUE* column can be manually edited.
 
-Next, click on "Generate" to generate the Visual Studio solution files, which
+Next, click on *Generate* to generate the Visual Studio solution files, which
 will be used to build the Gpuspline package.
 
 Running CMake from the command line
