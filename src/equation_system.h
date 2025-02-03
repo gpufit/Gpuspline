@@ -69,8 +69,27 @@ public:
     void set_matrix();
 };
 
+class EquationSystem_4D : public EquationSystem
+{
+public:
+    EquationSystem_4D();
+
+    void set_vector(
+        std::vector<Spline1D> & splines,
+        std::size_t const interpolated_size_x,
+        std::size_t const interpolated_size_y,
+        std::size_t const interpolated_size_z,
+        std::size_t const i,
+        std::size_t const j,
+        std::size_t const k, 
+        std::size_t const l);
+
+    void set_matrix();
+};
+
 extern EquationSystem_1D equation_system_1d;
 extern EquationSystem_2D equation_system_2d;
 extern EquationSystem_3D equation_system_3d;
+extern EquationSystem_4D equation_system_4d;
 
 #endif // !EQUATION_SYSTEM_INCLUDED

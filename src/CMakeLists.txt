@@ -118,6 +118,7 @@ set( splinesSources
     spline_1d.cpp
     spline_2d.cpp
     spline_3d.cpp
+	spline_4d.cpp
     equation_system.cpp
 )
 

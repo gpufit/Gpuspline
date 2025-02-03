@@ -34,6 +34,14 @@ extern "C" {
         std::size_t data_size_z,
         REAL * coefficients);
 
+    VISIBLE int calculate_coefficients_4d(
+        REAL * data,
+        std::size_t data_size_x,
+        std::size_t data_size_y,
+        std::size_t data_size_z,
+        std::size_t data_size_t,
+        REAL * coefficients);
+
     VISIBLE int interpolate_1d(
         REAL * data,
         std::size_t data_size_x,
@@ -62,6 +70,22 @@ extern "C" {
         REAL * x_values,
         REAL * y_values,
         REAL * z_values,
+        REAL * interpolated_data);
+
+    VISIBLE int interpolate_4d(
+        REAL * data,
+        std::size_t data_size_x,
+        std::size_t data_size_y,
+        std::size_t data_size_z,
+        std::size_t data_size_t,
+        std::size_t new_size_x,
+        std::size_t new_size_y,
+        std::size_t new_size_z,
+        std::size_t new_size_t,
+        REAL * x_values,
+        REAL * y_values,
+        REAL * z_values,
+        REAL * t_values,
         REAL * interpolated_data);
 
     VISIBLE int calculate_values_1d(
@@ -94,11 +118,29 @@ extern "C" {
         REAL * z_values,
         REAL * spline_values);
 
+    VISIBLE int calculate_values_4d(
+        REAL * coefficients,
+        std::size_t const n_intervals_x,
+        std::size_t const n_intervals_y,
+        std::size_t const n_intervals_z,
+        std::size_t const n_intervals_t,
+        std::size_t const values_size_x,
+        std::size_t const values_size_y,
+        std::size_t const values_size_z,
+        std::size_t const values_size_t,
+        REAL * x_values,
+        REAL * y_values,
+        REAL * z_values,
+        REAL * t_values,
+        REAL * spline_values);
+
     VISIBLE int calculate_coefficients_1d_portable(int argc, void *argv[]);
 
     VISIBLE int calculate_coefficients_2d_portable(int argc, void *argv[]);
 
     VISIBLE int calculate_coefficients_3d_portable(int argc, void *argv[]);
+
+    VISIBLE int calculate_coefficients_4d_portable(int argc, void *argv[]);
 
     VISIBLE int interpolate_1d_portable(int argc, void *argv[]);
 
@@ -106,11 +148,15 @@ extern "C" {
     
     VISIBLE int interpolate_3d_portable(int argc, void *argv[]);
 
+    VISIBLE int interpolate_4d_portable(int argc, void *argv[]);
+
     VISIBLE int calculate_values_1d_portable(int argc, void *argv[]);
 
     VISIBLE int calculate_values_2d_portable(int argc, void *argv[]);
 
     VISIBLE int calculate_values_3d_portable(int argc, void *argv[]);
+
+    VISIBLE int calculate_values_4d_portable(int argc, void *argv[]);
 
 #ifdef __cplusplus
 }

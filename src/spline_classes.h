@@ -188,6 +188,7 @@ public:
 
 public:
     static std::size_t const n_coefficients_per_point = 4 * 4 * 4;
+    std::size_t const n_intervals_;
 
 private:
     // Prod(dimensions - 1) * 64 coefficients, example 
@@ -200,6 +201,83 @@ private:
     std::size_t const n_intervals_x_;
     std::size_t const n_intervals_y_;
     std::size_t const n_intervals_z_;
+    bool coefficients_calculated_;
+    bool data_initialized_;
+};
+
+// TODO make this on rectangular grids (dimensions vector)
+class Spline4D
+{ // 4D cubic interpolating spline
+public:
+
+    // TODO use pointer array instead "std::size_t *" - or vector? - or as it is?
+
+    // data_sizes must be larger 1
+
+    Spline4D(
+        std::size_t const data_size_x,
+        std::size_t const data_size_y,
+        std::size_t const data_size_z,
+        std::size_t const data_size_t);
+
+    Spline4D(
+        std::size_t const n_intervals_x,
+        std::size_t const n_intervals_y,
+        std::size_t const n_intervals_z,
+        std::size_t const n_intervals_t,
+        REAL * coefficients);
+
+    ~Spline4D();
+
+    void initialize(REAL const* data);
+
+    void calculate_coefficients(REAL * coefficients);
+
+    void calculate_values(
+        REAL * spline_values,
+        REAL const * x_values,
+        REAL const * y_values,
+        REAL const * z_values,
+        REAL const * t_values,
+        std::size_t const size_x,
+        std::size_t const size_y,
+        std::size_t const size_z,
+        std::size_t const size_t);
+
+    REAL calculate_value(
+        REAL const x,
+        REAL const y,
+        REAL const z,
+        REAL const t);
+
+    void interpolate(
+        REAL * interpolated_data,
+        REAL const * data,
+        REAL const * x_values,
+        REAL const * y_values,
+        REAL const * z_values,
+        REAL const * t_values,
+        std::size_t const size_x,
+        std::size_t const size_y,
+        std::size_t const size_z,
+        std::size_t const size_t);
+
+public:
+    static std::size_t const n_coefficients_per_point = 4 * 4 * 4 * 4;
+
+private:
+    // Prod(dimensions - 1) * 64 coefficients, example 
+    // order is coefficients in interval first, then
+    REAL * coefficients_;
+    REAL const * data_;
+    std::size_t const data_size_x_;
+    std::size_t const data_size_y_;
+    std::size_t const data_size_z_;
+    std::size_t const data_size_t_;
+    std::size_t const n_intervals_x_;
+    std::size_t const n_intervals_y_;
+    std::size_t const n_intervals_z_;
+    std::size_t const n_intervals_t_;
     std::size_t const n_intervals_;
     bool coefficients_calculated_;
     bool data_initialized_;

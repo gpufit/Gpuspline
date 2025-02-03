@@ -40,6 +40,21 @@ int calculate_coefficients_3d(
     return 0;
 }
 
+int calculate_coefficients_4d(
+    REAL * data,
+    std::size_t data_size_x,
+    std::size_t data_size_y,
+    std::size_t data_size_z,
+    std::size_t data_size_t,
+    REAL * coefficients)
+{
+    Spline4D spline_4d(data_size_x, data_size_y, data_size_z, data_size_t);
+    spline_4d.initialize(data);
+    spline_4d.calculate_coefficients(coefficients);
+
+    return 0;
+}
+
 int interpolate_1d(
     REAL * data,
     std::size_t data_size_x,
@@ -99,6 +114,33 @@ int interpolate_3d(
         data,
         x_values, y_values, z_values,
         new_size_x, new_size_y, new_size_z);
+
+    return 0;
+}
+
+int interpolate_4d(
+    REAL * data,
+    std::size_t data_size_x,
+    std::size_t data_size_y,
+    std::size_t data_size_z,
+    std::size_t data_size_t,
+    std::size_t new_size_x,
+    std::size_t new_size_y,
+    std::size_t new_size_z,
+    std::size_t new_size_t,
+    REAL * x_values,
+    REAL * y_values,
+    REAL * z_values,
+    REAL * t_values,
+    REAL * interpolated_data)
+{
+    Spline4D spline_4d(data_size_x, data_size_y, data_size_z, data_size_t);
+
+    spline_4d.interpolate(
+        interpolated_data,
+        data,
+        x_values, y_values, z_values, t_values,
+        new_size_x, new_size_y, new_size_z, new_size_t);
 
     return 0;
 }
@@ -163,6 +205,37 @@ int calculate_values_3d(
     return 0;
 }
 
+int calculate_values_4d(
+    REAL * coefficients,
+    std::size_t const n_intervals_x,
+    std::size_t const n_intervals_y,
+    std::size_t const n_intervals_z,
+    std::size_t const n_intervals_t,
+    std::size_t const values_size_x,
+    std::size_t const values_size_y,
+    std::size_t const values_size_z,
+    std::size_t const values_size_t,
+    REAL * x_values,
+    REAL * y_values,
+    REAL * z_values,
+    REAL * t_values,
+    REAL* spline_values)
+{
+    Spline4D spline_4d(n_intervals_x, n_intervals_y, n_intervals_z, n_intervals_t, coefficients);
+    spline_4d.calculate_values(
+        spline_values,
+        x_values,
+        y_values,
+        z_values,
+        t_values,
+        values_size_x,
+        values_size_y,
+        values_size_z,
+        values_size_t);
+
+    return 0;
+}
+
 int calculate_coefficients_1d_portable(int argc, void *argv[])
 {
     return calculate_coefficients_1d(
@@ -188,6 +261,17 @@ int calculate_coefficients_3d_portable(int argc, void *argv[])
         *((std::size_t *)argv[2]),
         *((std::size_t *)argv[3]),
         (REAL *)argv[4]);
+}
+
+int calculate_coefficients_4d_portable(int argc, void *argv[])
+{
+    return calculate_coefficients_4d(
+        (REAL *)argv[0],
+        *((std::size_t *)argv[1]),
+        *((std::size_t *)argv[2]),
+        *((std::size_t *)argv[3]),
+        *((std::size_t *)argv[4]),
+        (REAL *)argv[5]);
 }
 
 int interpolate_1d_portable(int argc, void *argv[])
@@ -229,6 +313,25 @@ int interpolate_3d_portable(int argc, void *argv[])
         (REAL *)argv[10]);
 }
 
+int interpolate_4d_portable(int argc, void *argv[])
+{
+    return interpolate_4d(
+        (REAL *)argv[0],
+        *((std::size_t *)argv[1]),
+        *((std::size_t *)argv[2]),
+        *((std::size_t *)argv[3]),
+        *((std::size_t *)argv[4]),
+        *((std::size_t *)argv[5]),
+        *((std::size_t *)argv[6]),
+        *((std::size_t *)argv[7]),
+        *((std::size_t *)argv[8]),
+        (REAL *)argv[9],
+        (REAL *)argv[10],
+        (REAL *)argv[11],
+        (REAL *)argv[12],
+        (REAL *)argv[13]);
+}
+
 int calculate_values_1d_portable(int argc, void *argv[])
 {
     return calculate_values_1d(
@@ -266,4 +369,23 @@ int calculate_values_3d_portable(int argc, void *argv[])
         (REAL *)argv[8],
         (REAL *)argv[9],
         (REAL *)argv[10]);
+}
+
+int calculate_values_4d_portable(int argc, void *argv[])
+{
+    return calculate_values_4d(
+        (REAL *)argv[0],
+        *((std::size_t *)argv[1]),
+        *((std::size_t *)argv[2]),
+        *((std::size_t *)argv[3]),
+        *((std::size_t *)argv[4]),
+        *((std::size_t *)argv[5]),
+        *((std::size_t *)argv[6]),
+        *((std::size_t *)argv[7]),
+        *((std::size_t *)argv[8]),
+        (REAL *)argv[9],
+        (REAL *)argv[10],
+        (REAL *)argv[11],
+        (REAL *)argv[12],
+        (REAL *)argv[13]);
 }

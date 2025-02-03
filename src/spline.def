@@ -3,19 +3,25 @@ EXPORTS
     calculate_coefficients_1d @1
     calculate_coefficients_2d @2
     calculate_coefficients_3d @3
-    interpolate_1d @4
-    interpolate_2d @5
-    interpolate_3d @6
-    calculate_values_1d @7
-    calculate_values_2d @8
-    calculate_values_3d @9
+    calculate_coefficients_4d @4
+    interpolate_1d @5
+    interpolate_2d @6
+    interpolate_3d @7
+    interpolate_4d @8
+    calculate_values_1d @9
+    calculate_values_2d @10
+    calculate_values_3d @11
+    calculate_values_4d @12
 
-    calculate_coefficients_1d_portable @10
-    calculate_coefficients_2d_portable @11
-    calculate_coefficients_3d_portable @12
-    interpolate_1d_portable @13
-    interpolate_2d_portable @14
-    interpolate_3d_portable @15
-    calculate_values_1d_portable @16
-    calculate_values_2d_portable @17
-    calculate_values_3d_portable @18
+    calculate_coefficients_1d_portable @13
+    calculate_coefficients_2d_portable @14
+    calculate_coefficients_3d_portable @15
+    calculate_coefficients_4d_portable @16
+    interpolate_1d_portable @17
+    interpolate_2d_portable @18
+    interpolate_3d_portable @19
+    interpolate_4d_portable @20
+    calculate_values_1d_portable @21
+    calculate_values_2d_portable @22
+    calculate_values_3d_portable @23
+    calculate_values_4d_portable @24
