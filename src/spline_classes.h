@@ -50,6 +50,13 @@ public:
         REAL const * x_values,
         std::size_t const size_x);
 
+    // change the ordering of a coefficients array
+    void Spline1D::convert_csaps_coefficients(
+        REAL * csaps_coefficients,
+        std::size_t const n_spline_intervals,
+        REAL * grid_spacing_array,
+        REAL * reordered_coefficients);
+
     void set_coefficients(REAL * const coefficients);
 
 public:
@@ -113,6 +120,14 @@ public:
         REAL const * y_values,
         std::size_t const size_x,
         std::size_t const size_y);
+
+    // change the ordering of a coefficients array
+    void Spline2D::convert_csaps_coefficients(
+        REAL * csaps_coefficients,
+        std::size_t const n_spline_intervals_x,
+        std::size_t const n_spline_intervals_y,
+        REAL * grid_spacing_array,
+        REAL * reordered_coefficients);
 
 public:
     static std::size_t const n_coefficients_per_point = 4 * 4;
@@ -185,6 +200,14 @@ public:
         std::size_t const size_x,
         std::size_t const size_y,
         std::size_t const size_z);
+
+    void Spline3D::convert_csaps_coefficients(
+        REAL * csaps_coefficients,
+        std::size_t const n_spline_intervals_x,
+        std::size_t const n_spline_intervals_y,
+        std::size_t const n_spline_intervals_z,
+        REAL * grid_spacing_array,
+        REAL * reordered_coefficients);
 
 public:
     static std::size_t const n_coefficients_per_point = 4 * 4 * 4;
@@ -261,6 +284,15 @@ public:
         std::size_t const size_y,
         std::size_t const size_z,
         std::size_t const size_t);
+
+    void Spline4D::convert_csaps_coefficients(
+        REAL * csaps_coefficients,
+        std::size_t const n_spline_intervals_x,
+        std::size_t const n_spline_intervals_y,
+        std::size_t const n_spline_intervals_z,
+        std::size_t const n_spline_intervals_t,
+        REAL * grid_spacing_array,
+        REAL * reordered_coefficients);
 
 public:
     static std::size_t const n_coefficients_per_point = 4 * 4 * 4 * 4;

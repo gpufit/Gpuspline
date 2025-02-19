@@ -13,6 +13,19 @@ int calculate_coefficients_1d(
     return 0;
 }
 
+int convert_csaps_coefficients_1d(
+    REAL * csaps_coefficients,
+    std::size_t n_spline_intervals,
+    REAL * grid_spacing_array,
+    REAL * reordered_coefficients)
+{
+
+    Spline1D spline_1d(n_spline_intervals+1);
+    spline_1d.convert_csaps_coefficients(csaps_coefficients, n_spline_intervals, grid_spacing_array, reordered_coefficients);
+
+    return 0;
+}
+
 int calculate_coefficients_2d(
     REAL * data,
     std::size_t data_size_x,
@@ -25,6 +38,21 @@ int calculate_coefficients_2d(
 
     return 0;
 }
+
+int convert_csaps_coefficients_2d(
+    REAL * csaps_coefficients,
+    std::size_t n_spline_intervals_x,
+    std::size_t n_spline_intervals_y,
+    REAL * grid_spacing_array,
+    REAL * reordered_coefficients)
+{
+
+    Spline2D spline_2d(n_spline_intervals_x + 1, n_spline_intervals_y + 1);
+    spline_2d.convert_csaps_coefficients(csaps_coefficients, n_spline_intervals_x, n_spline_intervals_y, grid_spacing_array, reordered_coefficients);
+
+    return 0;
+}
+
 
 int calculate_coefficients_3d(
     REAL * data,
@@ -40,6 +68,21 @@ int calculate_coefficients_3d(
     return 0;
 }
 
+int convert_csaps_coefficients_3d(
+    REAL * csaps_coefficients,
+    std::size_t n_spline_intervals_x,
+    std::size_t n_spline_intervals_y,
+    std::size_t n_spline_intervals_z,
+    REAL * grid_spacing_array,
+    REAL * reordered_coefficients)
+{
+
+    Spline3D spline_3d(n_spline_intervals_x + 1, n_spline_intervals_y + 1, n_spline_intervals_z + 1);
+    spline_3d.convert_csaps_coefficients(csaps_coefficients, n_spline_intervals_x, n_spline_intervals_y, n_spline_intervals_z, grid_spacing_array, reordered_coefficients);
+
+    return 0;
+}
+
 int calculate_coefficients_4d(
     REAL * data,
     std::size_t data_size_x,
@@ -51,6 +94,22 @@ int calculate_coefficients_4d(
     Spline4D spline_4d(data_size_x, data_size_y, data_size_z, data_size_t);
     spline_4d.initialize(data);
     spline_4d.calculate_coefficients(coefficients);
+
+    return 0;
+}
+
+int convert_csaps_coefficients_4d(
+    REAL * csaps_coefficients,
+    std::size_t n_spline_intervals_x,
+    std::size_t n_spline_intervals_y,
+    std::size_t n_spline_intervals_z,
+    std::size_t n_spline_intervals_t,
+    REAL * grid_spacing_array,
+    REAL * reordered_coefficients)
+{
+
+    Spline4D spline_4d(n_spline_intervals_x + 1, n_spline_intervals_y + 1, n_spline_intervals_z + 1, n_spline_intervals_t + 1);
+    spline_4d.convert_csaps_coefficients(csaps_coefficients, n_spline_intervals_x, n_spline_intervals_y, n_spline_intervals_z, n_spline_intervals_t, grid_spacing_array, reordered_coefficients);
 
     return 0;
 }
@@ -244,6 +303,15 @@ int calculate_coefficients_1d_portable(int argc, void *argv[])
         (REAL *)argv[2]);
 }
 
+int convert_csaps_coefficients_1d_portable(int argc, void *argv[])
+{
+    return convert_csaps_coefficients_1d(
+        (REAL *)argv[0],
+        *((std::size_t *)argv[1]),
+        (REAL *)argv[2],
+        (REAL *)argv[3]);
+}
+
 int calculate_coefficients_2d_portable(int argc, void *argv[])
 {
     return calculate_coefficients_2d(
@@ -251,6 +319,16 @@ int calculate_coefficients_2d_portable(int argc, void *argv[])
         *((std::size_t *)argv[1]),
         *((std::size_t *)argv[2]),
         (REAL *)argv[3]);
+}
+
+int convert_csaps_coefficients_2d_portable(int argc, void *argv[])
+{
+    return convert_csaps_coefficients_2d(
+        (REAL *)argv[0],
+        *((std::size_t *)argv[1]),
+        *((std::size_t *)argv[2]),
+        (REAL *)argv[3],
+        (REAL *)argv[4]);
 }
 
 int calculate_coefficients_3d_portable(int argc, void *argv[])
@@ -263,6 +341,17 @@ int calculate_coefficients_3d_portable(int argc, void *argv[])
         (REAL *)argv[4]);
 }
 
+int convert_csaps_coefficients_3d_portable(int argc, void *argv[])
+{
+    return convert_csaps_coefficients_3d(
+        (REAL *)argv[0],
+        *((std::size_t *)argv[1]),
+        *((std::size_t *)argv[2]),
+        *((std::size_t *)argv[3]),
+        (REAL *)argv[4],
+        (REAL *)argv[5]);
+}
+
 int calculate_coefficients_4d_portable(int argc, void *argv[])
 {
     return calculate_coefficients_4d(
@@ -272,6 +361,18 @@ int calculate_coefficients_4d_portable(int argc, void *argv[])
         *((std::size_t *)argv[3]),
         *((std::size_t *)argv[4]),
         (REAL *)argv[5]);
+}
+
+int convert_csaps_coefficients_4d_portable(int argc, void *argv[])
+{
+    return convert_csaps_coefficients_4d(
+        (REAL *)argv[0],
+        *((std::size_t *)argv[1]),
+        *((std::size_t *)argv[2]),
+        *((std::size_t *)argv[3]),
+        *((std::size_t *)argv[4]),
+        (REAL *)argv[5],
+        (REAL *)argv[6]);
 }
 
 int interpolate_1d_portable(int argc, void *argv[])

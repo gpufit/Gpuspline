@@ -25,3 +25,7 @@ EXPORTS
     calculate_values_2d_portable @22
     calculate_values_3d_portable @23
     calculate_values_4d_portable @24
+    convert_csaps_coefficients_1d_portable @25
+    convert_csaps_coefficients_2d_portable @26
+    convert_csaps_coefficients_3d_portable @27
+    convert_csaps_coefficients_4d_portable @28

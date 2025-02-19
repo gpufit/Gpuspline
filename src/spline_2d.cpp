@@ -21,7 +21,7 @@ Spline2D::Spline2D(
     data_size_y_(n_intervals_y + 1),
     n_intervals_x_(n_intervals_x),
     n_intervals_y_(n_intervals_y),
-    n_intervals_(n_intervals_x_ * n_intervals_y_),
+    n_intervals_(n_intervals_x * n_intervals_y),
     coefficients_calculated_(true),
     data_initialized_(false),
     coefficients_(coefficients)
@@ -176,4 +176,57 @@ void Spline2D::interpolate(
         y_values,
         size_x,
         size_y);
+}
+
+// change the ordering of a coefficients array
+void Spline2D::convert_csaps_coefficients(
+    REAL * csaps_coefficients,
+    std::size_t const n_spline_intervals_x,
+    std::size_t const n_spline_intervals_y,
+    REAL * grid_spacing_array,
+    REAL * reordered_coefficients)
+{
+
+    REAL dx = grid_spacing_array[0];
+    REAL dy = grid_spacing_array[1];
+
+    REAL dx_scale_factors[4], dy_scale_factors[4];
+
+    dx_scale_factors[0] = 1.0;
+    dx_scale_factors[1] = dx;
+    dx_scale_factors[2] = dx * dx;
+    dx_scale_factors[3] = dx * dx * dx;
+
+    dy_scale_factors[0] = 1.0;
+    dy_scale_factors[1] = dy;
+    dy_scale_factors[2] = dy * dy;
+    dy_scale_factors[3] = dy * dy * dy;
+    
+    for (std::size_t y_index = 0; y_index < n_spline_intervals_y; y_index++)
+    {
+        for (std::size_t x_index = 0; x_index < n_spline_intervals_x; x_index++)
+        {
+            for (std::size_t order_y_index = 0; order_y_index < Spline1D::n_coefficients_per_point; order_y_index++)
+            {
+                for (std::size_t order_x_index = 0; order_x_index < Spline1D::n_coefficients_per_point; order_x_index++)
+                {
+
+                    std::size_t const std_point_index = x_index * n_spline_intervals_y + y_index;
+                    std::size_t const std_coeff_index = order_x_index * Spline1D::n_coefficients_per_point + order_y_index;
+                    std::size_t const combined_std_coeff_index = std_point_index * n_coefficients_per_point + std_coeff_index;
+
+                    
+                    std::size_t const combined_csaps_coeff_index = ((Spline1D::n_coefficients_per_point - 1) - order_x_index) * Spline1D::n_coefficients_per_point * n_spline_intervals_x * n_spline_intervals_y + 
+                                                                   ((Spline1D::n_coefficients_per_point - 1) - order_y_index) * n_spline_intervals_x * n_spline_intervals_y +
+                                                                   (x_index)* n_spline_intervals_y +
+                                                                   (y_index);
+
+                    reordered_coefficients[combined_std_coeff_index] = csaps_coefficients[combined_csaps_coeff_index] * 
+                                                                           dx_scale_factors[order_x_index] * 
+                                                                           dy_scale_factors[order_y_index];
+
+                }
+            }
+        }
+    }
 }

@@ -94,6 +94,19 @@ void Spline1D::calculate_values(
 {
     for (std::size_t x_index = 0; x_index < size_x; x_index++)
     {
+
+        if (x_index == (size_x - 1)){
+
+            int a = 0;
+
+        }
+
+        if (x_index == (size_x - 2)){
+
+            int b = 0;
+
+        }
+
         spline_values[x_index] = calculate_value(x_values[x_index]);
     }
 }
@@ -114,4 +127,34 @@ void Spline1D::interpolate(
         interpolated_data,
         x_values,
         size_x);
+}
+
+// change the ordering of a coefficients array
+void Spline1D::convert_csaps_coefficients(
+    REAL * csaps_coefficients,
+    std::size_t const n_spline_intervals,
+    REAL * grid_spacing_array,
+    REAL * reordered_coefficients)
+{
+
+    REAL dx = grid_spacing_array[0];
+
+    REAL dx_scale_factors[4];
+    
+    dx_scale_factors[0] = 1.0;
+    dx_scale_factors[1] = dx;
+    dx_scale_factors[2] = dx * dx;
+    dx_scale_factors[3] = dx * dx * dx;
+
+    for (std::size_t x_index = 0; x_index < n_spline_intervals; x_index++)
+    {
+        for (std::size_t order_index = 0; order_index < n_coefficients_per_point; order_index++){
+
+            std::size_t csaps_index = ((n_coefficients_per_point - 1) - order_index)*n_spline_intervals + x_index;
+            std::size_t std_index = x_index * n_coefficients_per_point + order_index;
+
+            reordered_coefficients[std_index] = csaps_coefficients[csaps_index] * dx_scale_factors[order_index];
+
+        }
+    }
 }

@@ -9,7 +9,7 @@ Spline3D::Spline3D(std::size_t const data_size_x, std::size_t const data_size_y,
     n_intervals_x_(data_size_x - 1),
     n_intervals_y_(data_size_y - 1),
     n_intervals_z_(data_size_z - 1),
-    n_intervals_(n_intervals_x_ * n_intervals_y_ * n_intervals_z_),
+    n_intervals_((data_size_x - 1) * (data_size_y - 1) * (data_size_z - 1)),
     coefficients_calculated_(false),
     data_initialized_(false)
 {}
@@ -26,7 +26,7 @@ Spline3D::Spline3D(
     n_intervals_x_(n_intervals_x),
     n_intervals_y_(n_intervals_y),
     n_intervals_z_(n_intervals_z),
-    n_intervals_(n_intervals_x_ * n_intervals_y_ * n_intervals_z_),
+    n_intervals_(n_intervals_x * n_intervals_y * n_intervals_z),
     coefficients_calculated_(true),
     data_initialized_(false),
     coefficients_(coefficients)
@@ -222,4 +222,79 @@ void Spline3D::interpolate(
         size_x,
         size_y,
         size_z);
+}
+
+
+// change the ordering of a coefficients array
+void Spline3D::convert_csaps_coefficients(
+    REAL * csaps_coefficients,
+    std::size_t const n_spline_intervals_x,
+    std::size_t const n_spline_intervals_y,
+    std::size_t const n_spline_intervals_z,
+    REAL * grid_spacing_array,
+    REAL * reordered_coefficients)
+{
+
+    REAL dx = grid_spacing_array[0];
+    REAL dy = grid_spacing_array[1];
+    REAL dz = grid_spacing_array[2];
+
+    REAL dx_scale_factors[4], dy_scale_factors[4], dz_scale_factors[4];
+
+    dx_scale_factors[0] = 1.0;
+    dx_scale_factors[1] = dx;
+    dx_scale_factors[2] = dx * dx;
+    dx_scale_factors[3] = dx * dx * dx;
+
+    dy_scale_factors[0] = 1.0;
+    dy_scale_factors[1] = dy;
+    dy_scale_factors[2] = dy * dy;
+    dy_scale_factors[3] = dy * dy * dy;
+
+    dz_scale_factors[0] = 1.0;
+    dz_scale_factors[1] = dz;
+    dz_scale_factors[2] = dz * dz;
+    dz_scale_factors[3] = dz * dz * dz;
+
+    std::size_t ncpp1d = Spline1D::n_coefficients_per_point;
+
+    std::size_t nyz = n_spline_intervals_y * n_spline_intervals_z;
+    std::size_t nxyz = n_spline_intervals_x * n_spline_intervals_y * n_spline_intervals_z;
+
+    for (std::size_t z_index = 0; z_index < n_spline_intervals_z; z_index++)
+    {
+        for (std::size_t y_index = 0; y_index < n_spline_intervals_y; y_index++)
+        {
+            for (std::size_t x_index = 0; x_index < n_spline_intervals_x; x_index++)
+            {
+                for (std::size_t order_z_index = 0; order_z_index < Spline1D::n_coefficients_per_point; order_z_index++)
+                {
+                    for (std::size_t order_y_index = 0; order_y_index < Spline1D::n_coefficients_per_point; order_y_index++)
+                    {
+                        for (std::size_t order_x_index = 0; order_x_index < Spline1D::n_coefficients_per_point; order_x_index++)
+                        {
+
+                            std::size_t const std_point_index = (x_index * nyz) + (y_index * n_spline_intervals_z) + z_index;
+                            std::size_t const std_coeff_index = order_x_index * ncpp1d * ncpp1d + order_y_index * ncpp1d + order_z_index;
+                            std::size_t const combined_std_coeff_index = std_point_index * n_coefficients_per_point + std_coeff_index;
+
+
+                            std::size_t const combined_csaps_coeff_index = ((ncpp1d - 1) - order_x_index) * ncpp1d * ncpp1d * nxyz +
+                                                                           ((ncpp1d - 1) - order_y_index) * ncpp1d * nxyz +
+                                                                           ((ncpp1d - 1) - order_z_index) * nxyz +
+                                                                           (x_index) * nyz +
+                                                                           (y_index) * n_spline_intervals_z +
+                                                                           (z_index);
+
+                            reordered_coefficients[combined_std_coeff_index] = csaps_coefficients[combined_csaps_coeff_index] * 
+                                                                                   dx_scale_factors[order_x_index] * 
+                                                                                   dy_scale_factors[order_y_index] * 
+                                                                                   dz_scale_factors[order_z_index];
+
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

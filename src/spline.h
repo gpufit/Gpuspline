@@ -134,6 +134,36 @@ extern "C" {
         REAL * t_values,
         REAL * spline_values);
 
+    VISIBLE int convert_csaps_coefficients_1d(
+        REAL * csaps_coefficients,
+        std::size_t n_spline_intervals,
+        REAL * grid_spacing_array,
+        REAL * reordered_coefficients);
+
+    VISIBLE int convert_csaps_coefficients_2d(
+        REAL * csaps_coefficients,
+        std::size_t n_spline_intervals_x,
+        std::size_t n_spline_intervals_y,
+        REAL * grid_spacing_array,
+        REAL * reordered_coefficients);
+
+    VISIBLE int convert_csaps_coefficients_3d(
+        REAL * csaps_coefficients,
+        std::size_t n_spline_intervals_x,
+        std::size_t n_spline_intervals_y,
+        std::size_t n_spline_intervals_z,
+        REAL * grid_spacing_array,
+        REAL * reordered_coefficients);
+
+    VISIBLE int convert_csaps_coefficients_4d(
+        REAL * csaps_coefficients,
+        std::size_t n_spline_intervals_x,
+        std::size_t n_spline_intervals_y,
+        std::size_t n_spline_intervals_z,
+        std::size_t n_spline_intervals_t,
+        REAL * grid_spacing_array,
+        REAL * reordered_coefficients);
+
     VISIBLE int calculate_coefficients_1d_portable(int argc, void *argv[]);
 
     VISIBLE int calculate_coefficients_2d_portable(int argc, void *argv[]);
@@ -157,6 +187,14 @@ extern "C" {
     VISIBLE int calculate_values_3d_portable(int argc, void *argv[]);
 
     VISIBLE int calculate_values_4d_portable(int argc, void *argv[]);
+
+    VISIBLE int convert_csaps_coefficients_1d_portable(int argc, void *argv[]);
+
+    VISIBLE int convert_csaps_coefficients_2d_portable(int argc, void *argv[]);
+
+    VISIBLE int convert_csaps_coefficients_3d_portable(int argc, void *argv[]);
+
+    VISIBLE int convert_csaps_coefficients_4d_portable(int argc, void *argv[]);
 
 #ifdef __cplusplus
 }
