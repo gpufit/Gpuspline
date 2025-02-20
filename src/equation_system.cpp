@@ -174,11 +174,11 @@ void EquationSystem_2D::set_vector(
     for (std::size_t k = 0; k < 4; k++)
     {
         Spline1D & spline = splines[3 * i + k];
-        for (std::size_t l = 0; l < 4; l++)
+        for (std::size_t m = 0; m < 4; m++)
         {
-            REAL y = static_cast<REAL>(j) + static_cast<REAL>(l) / 3.0;
+            REAL y = static_cast<REAL>(j) + static_cast<REAL>(m) / 3.0;
             // order is y-axis first, then x-axis
-            vector_[k * 4 + l] = spline.calculate_value(y);
+            vector_[k * 4 + m] = spline.calculate_value(y);
         }
     }
 }
@@ -311,11 +311,11 @@ void EquationSystem_4D::set_vector(
     std::size_t const i,
     std::size_t const j,
     std::size_t const k, 
-    std::size_t const l)
+    std::size_t const m)
 {
 
 
-    // (i,j,k,l) spline interval index in 4D
+    // (i,j,k,m) spline interval index in 4D
     for (std::size_t m = 0; m < 4; m++)
     {
         for (std::size_t n = 0; n < 4; n++)
@@ -328,8 +328,8 @@ void EquationSystem_4D::set_vector(
 
                 for (std::size_t p = 0; p < 4; p++)
                 {
-                    REAL t = static_cast<REAL>(l)+static_cast<REAL>(p) / 3.0;
-                    vector_[m * 64 + n * 16 + o * 4 + p] = spline.calculate_value(t);
+                    REAL w = static_cast<REAL>(m)+static_cast<REAL>(p) / 3.0;
+                    vector_[m * 64 + n * 16 + o * 4 + p] = spline.calculate_value(w);
                 }
             }
         }

@@ -39,7 +39,7 @@ extern "C" {
         std::size_t data_size_x,
         std::size_t data_size_y,
         std::size_t data_size_z,
-        std::size_t data_size_t,
+        std::size_t data_size_w,
         REAL * coefficients);
 
     VISIBLE int interpolate_1d(
@@ -77,15 +77,15 @@ extern "C" {
         std::size_t data_size_x,
         std::size_t data_size_y,
         std::size_t data_size_z,
-        std::size_t data_size_t,
+        std::size_t data_size_w,
         std::size_t new_size_x,
         std::size_t new_size_y,
         std::size_t new_size_z,
-        std::size_t new_size_t,
+        std::size_t new_size_w,
         REAL * x_values,
         REAL * y_values,
         REAL * z_values,
-        REAL * t_values,
+        REAL * w_values,
         REAL * interpolated_data);
 
     VISIBLE int calculate_values_1d(
@@ -123,15 +123,15 @@ extern "C" {
         std::size_t const n_intervals_x,
         std::size_t const n_intervals_y,
         std::size_t const n_intervals_z,
-        std::size_t const n_intervals_t,
+        std::size_t const n_intervals_w,
         std::size_t const values_size_x,
         std::size_t const values_size_y,
         std::size_t const values_size_z,
-        std::size_t const values_size_t,
+        std::size_t const values_size_w,
         REAL * x_values,
         REAL * y_values,
         REAL * z_values,
-        REAL * t_values,
+        REAL * w_values,
         REAL * spline_values);
 
     VISIBLE int convert_csaps_coefficients_1d(
@@ -160,7 +160,7 @@ extern "C" {
         std::size_t n_spline_intervals_x,
         std::size_t n_spline_intervals_y,
         std::size_t n_spline_intervals_z,
-        std::size_t n_spline_intervals_t,
+        std::size_t n_spline_intervals_w,
         REAL * grid_spacing_array,
         REAL * reordered_coefficients);
 

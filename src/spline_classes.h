@@ -241,13 +241,13 @@ public:
         std::size_t const data_size_x,
         std::size_t const data_size_y,
         std::size_t const data_size_z,
-        std::size_t const data_size_t);
+        std::size_t const data_size_w);
 
     Spline4D(
         std::size_t const n_intervals_x,
         std::size_t const n_intervals_y,
         std::size_t const n_intervals_z,
-        std::size_t const n_intervals_t,
+        std::size_t const n_intervals_w,
         REAL * coefficients);
 
     ~Spline4D();
@@ -261,17 +261,17 @@ public:
         REAL const * x_values,
         REAL const * y_values,
         REAL const * z_values,
-        REAL const * t_values,
+        REAL const * w_values,
         std::size_t const size_x,
         std::size_t const size_y,
         std::size_t const size_z,
-        std::size_t const size_t);
+        std::size_t const size_w);
 
     REAL calculate_value(
         REAL const x,
         REAL const y,
         REAL const z,
-        REAL const t);
+        REAL const w);
 
     void interpolate(
         REAL * interpolated_data,
@@ -279,18 +279,18 @@ public:
         REAL const * x_values,
         REAL const * y_values,
         REAL const * z_values,
-        REAL const * t_values,
+        REAL const * w_values,
         std::size_t const size_x,
         std::size_t const size_y,
         std::size_t const size_z,
-        std::size_t const size_t);
+        std::size_t const size_w);
 
     void Spline4D::convert_csaps_coefficients(
         REAL * csaps_coefficients,
         std::size_t const n_spline_intervals_x,
         std::size_t const n_spline_intervals_y,
         std::size_t const n_spline_intervals_z,
-        std::size_t const n_spline_intervals_t,
+        std::size_t const n_spline_intervals_w,
         REAL * grid_spacing_array,
         REAL * reordered_coefficients);
 
@@ -305,11 +305,11 @@ private:
     std::size_t const data_size_x_;
     std::size_t const data_size_y_;
     std::size_t const data_size_z_;
-    std::size_t const data_size_t_;
+    std::size_t const data_size_w_;
     std::size_t const n_intervals_x_;
     std::size_t const n_intervals_y_;
     std::size_t const n_intervals_z_;
-    std::size_t const n_intervals_t_;
+    std::size_t const n_intervals_w_;
     std::size_t const n_intervals_;
     bool coefficients_calculated_;
     bool data_initialized_;
