@@ -110,6 +110,7 @@ set( splinesHeaders
     spline_classes.h
     definitions.h
     equation_system.h
+	math_utils.h
 )
 
 set( splinesSources
@@ -119,7 +120,11 @@ set( splinesSources
     spline_2d.cpp
     spline_3d.cpp
 	spline_4d.cpp
+	spline_5d.cpp
+	bspline_1d.cpp
+	bspline_5d.cpp
     equation_system.cpp
+	regrid_data.cpp
 )
 
 add_library( splines SHARED

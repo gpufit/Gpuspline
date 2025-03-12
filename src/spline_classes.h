@@ -2,11 +2,15 @@
 #define SPLINE_CLASSES_H_INCLUDED
 
 #include "definitions.h"
+#include "math_utils.h"
 #include "equation_system.h"
 #include <vector>
 #include <cmath>
+#include <cstring>  // For memset
 #include <cstddef>
 #include <limits>
+#include <algorithm>
+
 
 // TODO maybe we also want to calculate derivatives
 
@@ -56,8 +60,6 @@ public:
         std::size_t const n_spline_intervals,
         REAL * grid_spacing_array,
         REAL * reordered_coefficients);
-
-    void set_coefficients(REAL * const coefficients);
 
 public:
     // TODO rename to coefficients_per_interval
@@ -241,13 +243,13 @@ public:
         std::size_t const data_size_x,
         std::size_t const data_size_y,
         std::size_t const data_size_z,
-        std::size_t const data_size_t);
+        std::size_t const data_size_w);
 
     Spline4D(
         std::size_t const n_intervals_x,
         std::size_t const n_intervals_y,
         std::size_t const n_intervals_z,
-        std::size_t const n_intervals_t,
+        std::size_t const n_intervals_w,
         REAL * coefficients);
 
     ~Spline4D();
@@ -261,17 +263,17 @@ public:
         REAL const * x_values,
         REAL const * y_values,
         REAL const * z_values,
-        REAL const * t_values,
+        REAL const * w_values,
         std::size_t const size_x,
         std::size_t const size_y,
         std::size_t const size_z,
-        std::size_t const size_t);
+        std::size_t const size_w);
 
     REAL calculate_value(
         REAL const x,
         REAL const y,
         REAL const z,
-        REAL const t);
+        REAL const w);
 
     void interpolate(
         REAL * interpolated_data,
@@ -279,23 +281,24 @@ public:
         REAL const * x_values,
         REAL const * y_values,
         REAL const * z_values,
-        REAL const * t_values,
+        REAL const * w_values,
         std::size_t const size_x,
         std::size_t const size_y,
         std::size_t const size_z,
-        std::size_t const size_t);
+        std::size_t const size_w);
 
     void Spline4D::convert_csaps_coefficients(
         REAL * csaps_coefficients,
         std::size_t const n_spline_intervals_x,
         std::size_t const n_spline_intervals_y,
         std::size_t const n_spline_intervals_z,
-        std::size_t const n_spline_intervals_t,
+        std::size_t const n_spline_intervals_w,
         REAL * grid_spacing_array,
         REAL * reordered_coefficients);
 
 public:
     static std::size_t const n_coefficients_per_point = 4 * 4 * 4 * 4;
+    std::size_t const n_intervals_;
 
 private:
     // Prod(dimensions - 1) * 64 coefficients, example 
@@ -305,14 +308,202 @@ private:
     std::size_t const data_size_x_;
     std::size_t const data_size_y_;
     std::size_t const data_size_z_;
-    std::size_t const data_size_t_;
+    std::size_t const data_size_w_;
     std::size_t const n_intervals_x_;
     std::size_t const n_intervals_y_;
     std::size_t const n_intervals_z_;
-    std::size_t const n_intervals_t_;
-    std::size_t const n_intervals_;
+    std::size_t const n_intervals_w_;
     bool coefficients_calculated_;
     bool data_initialized_;
 };
+
+
+class Spline5D
+{ // 5D cubic interpolating spline
+public:
+
+    // Constructor with data sizes
+    Spline5D(
+        std::size_t const data_size_x,
+        std::size_t const data_size_y,
+        std::size_t const data_size_z,
+        std::size_t const data_size_w,
+        std::size_t const data_size_v);
+
+    // Constructor with precomputed coefficients
+    Spline5D(
+        std::size_t const n_intervals_x,
+        std::size_t const n_intervals_y,
+        std::size_t const n_intervals_z,
+        std::size_t const n_intervals_w,
+        std::size_t const n_intervals_v,
+        REAL * coefficients);
+
+    ~Spline5D();
+
+    // Initialize spline with raw data
+    void initialize(REAL const* data);
+
+    // Compute spline coefficients
+    void calculate_coefficients(REAL * coefficients);
+
+    // Evaluate the spline at multiple points
+    void calculate_values(
+        REAL * spline_values,
+        REAL const * x_values,
+        REAL const * y_values,
+        REAL const * z_values,
+        REAL const * w_values,
+        REAL const * v_values,
+        std::size_t const size_x,
+        std::size_t const size_y,
+        std::size_t const size_z,
+        std::size_t const size_w,
+        std::size_t const size_v);
+
+    // Evaluate the spline at a single point
+    REAL calculate_value(
+        REAL const x,
+        REAL const y,
+        REAL const z,
+        REAL const w,
+        REAL const v);
+
+    // Perform full interpolation of a 5D dataset
+    void interpolate(
+        REAL * interpolated_data,
+        REAL const * data,
+        REAL const * x_values,
+        REAL const * y_values,
+        REAL const * z_values,
+        REAL const * w_values,
+        REAL const * v_values,
+        std::size_t const size_x,
+        std::size_t const size_y,
+        std::size_t const size_z,
+        std::size_t const size_w,
+        std::size_t const size_v);
+
+    // Convert external CSAPS coefficients to internal format
+    void convert_csaps_coefficients(
+        REAL * csaps_coefficients,
+        std::size_t const n_spline_intervals_x,
+        std::size_t const n_spline_intervals_y,
+        std::size_t const n_spline_intervals_z,
+        std::size_t const n_spline_intervals_w,
+        std::size_t const n_spline_intervals_v,
+        REAL * grid_spacing_array,
+        REAL * reordered_coefficients);
+
+public:
+    // Number of coefficients per grid point (4^5 for 5D cubic splines)
+    static std::size_t const n_coefficients_per_point = 4 * 4 * 4 * 4 * 4;
+    std::size_t const n_intervals_;
+
+private:
+    // Coefficients storage: (prod(dimensions - 1)) * (4^5) coefficients
+    REAL * coefficients_;
+    REAL const * data_;
+    std::size_t const data_size_x_;
+    std::size_t const data_size_y_;
+    std::size_t const data_size_z_;
+    std::size_t const data_size_w_;
+    std::size_t const data_size_v_;
+    std::size_t const n_intervals_x_;
+    std::size_t const n_intervals_y_;
+    std::size_t const n_intervals_z_;
+    std::size_t const n_intervals_w_;
+    std::size_t const n_intervals_v_;
+    bool coefficients_calculated_;
+    bool data_initialized_;
+};
+
+
+
+class BSpline1D {
+public:
+    // Constructors and Destructor
+    BSpline1D(int Nx);
+    BSpline1D(int Nx, REAL* coefficients);
+    ~BSpline1D();
+
+    // Initialize coefficients from raw data
+    void initialize(const REAL* data);
+
+    // Compute spline coefficients
+    void calculate_coefficients(REAL* coefficients);
+
+    // given a list of x values calls the function below iteratively
+    void calculate_values(
+        REAL * bspline_values,
+        REAL const * x_values,
+        std::size_t size_x);
+
+    // Evaluate the B-spline function
+    REAL evaluate(REAL x) const;
+
+    // Evaluate the B-spline function and its first derivative
+    void evaluate_with_derivative(REAL x, REAL& function_value, REAL& dx) const;
+
+private:
+    // Grid size
+    int Nx_;
+
+    // Store total control points
+    int N_control_;
+    
+    // data storage
+    REAL const * data_;
+    bool data_initialized_;
+
+    // Coefficient storage
+    REAL* coefficients_;
+    bool coefficients_calculated_;
+
+    // Knot vector storage
+    REAL* knots_;
+
+    // Utility functions
+    void allocate_knots();
+    void compute_basis_functions(REAL* basis_values, REAL x) const;
+    void compute_derivative_basis_functions(REAL* basis_derivatives, REAL x) const;
+};
+
+
+class BSpline5D {
+public:
+    // Constructors and Destructor
+    BSpline5D(int Nx, int Ny, int Nz, int Nw, int Nv);
+    BSpline5D(int Nx, int Ny, int Nz, int Nw, int Nv, REAL* coefficients);
+    ~BSpline5D();
+
+    // Initialize coefficients from raw data
+    void initialize(const REAL* data);
+
+    // Compute spline coefficients
+    void calculate_coefficients(REAL* coefficients, const REAL* data);
+
+    // Evaluate the B-spline function
+    REAL evaluate(REAL x, REAL y, REAL z, REAL w, REAL v) const;
+
+    // Evaluate the B-spline function and its first derivatives
+    void evaluate_with_derivatives(REAL x, REAL y, REAL z, REAL w, REAL v,
+        REAL& function_value,
+        REAL& dx, REAL& dy, REAL& dz, REAL& dw, REAL& dv) const;
+
+private:
+    // Grid sizes
+    int Nx_, Ny_, Nz_, Nw_, Nv_;
+
+    // Coefficient storage
+    REAL* coefficients_;
+    bool coefficients_calculated_;
+    bool data_initialized_;
+
+    // Utility functions
+    void compute_basis_functions(REAL* basis_values, REAL x) const;
+    void compute_derivative_basis_functions(REAL* basis_derivatives, REAL x) const;
+};
+
 
 #endif

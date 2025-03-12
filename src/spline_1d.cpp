@@ -26,14 +26,10 @@ void Spline1D::initialize(REAL const * data)
     data_initialized_ = true;
 }
 
-void Spline1D::set_coefficients(REAL * const coefficients)
-{
-    coefficients_ = coefficients;
-}
 
 // this follows http://mathworld.wolfram.com/CubicSpline.html which sets the second derivatives at the endpoints to zero
-void Spline1D::calculate_coefficients(
-    REAL * coefficients)
+
+void Spline1D::calculate_coefficients(REAL * coefficients)
 {
     coefficients_ = coefficients;
 
@@ -94,19 +90,6 @@ void Spline1D::calculate_values(
 {
     for (std::size_t x_index = 0; x_index < size_x; x_index++)
     {
-
-        if (x_index == (size_x - 1)){
-
-            int a = 0;
-
-        }
-
-        if (x_index == (size_x - 2)){
-
-            int b = 0;
-
-        }
-
         spline_values[x_index] = calculate_value(x_values[x_index]);
     }
 }
