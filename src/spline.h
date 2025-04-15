@@ -240,17 +240,12 @@ extern "C" {
         int* output_vol_avg_indices,
         REAL* output_vol_avg_weights);
 
-    VISIBLE int bspline_calculate_coefficients_1d(
-        REAL * data,
-        int data_size_x,
-        REAL * coefficients);
-
     VISIBLE int bspline_calculate_values_1d(
-        REAL * coefficients,
-        std::size_t const n_intervals_x,
+        int data_size_x,
+        REAL * data,
         std::size_t const values_size_x,
         REAL * x_values,
-        REAL * spline_values);
+        REAL * bspline_values);
 
     VISIBLE int calculate_coefficients_1d_portable(int argc, void *argv[]);
 
@@ -293,8 +288,6 @@ extern "C" {
     VISIBLE int convert_csaps_coefficients_5d_portable(int argc, void *argv[]);
 
     VISIBLE int regrid_3d_volumes_portable(int argc, void *argv[]);
-
-    VISIBLE int bspline_calculate_coefficients_1d_portable(int argc, void *argv[]);
 
     VISIBLE int bspline_calculate_values_1d_portable(int argc, void *argv[]);
 

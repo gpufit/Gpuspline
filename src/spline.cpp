@@ -659,37 +659,15 @@ int calculate_values_5d_portable(int argc, void *argv[])
 }
 
 
-int bspline_calculate_coefficients_1d(
-    REAL * data,
-    int data_size_x,
-    REAL * coefficients)
-{
-    BSpline1D bspline_1d(data_size_x);
-    bspline_1d.initialize(data);
-    bspline_1d.calculate_coefficients(coefficients);
-
-    return 0;
-}
-
-
-int bspline_calculate_coefficients_1d_portable(int argc, void *argv[])
-{
-    return bspline_calculate_coefficients_1d(
-        (REAL *)argv[0],
-        *((int *)argv[1]),
-        (REAL *)argv[2]);
-}
-
-
 int bspline_calculate_values_1d(
-    REAL * coefficients,
-    std::size_t const n_intervals_x,
+    int data_size_x,
+    REAL * data,
     std::size_t const values_size_x,
     REAL * x_values,
-    REAL* bspline_values)
+    REAL * bspline_values)
 {
-    BSpline1D bspline_1d(n_intervals_x, coefficients);
-    bspline_1d.calculate_values(bspline_values, x_values, values_size_x);
+    BSpline1D bspline_1d(data_size_x, data);
+    bspline_1d.calculate_values(x_values, values_size_x, bspline_values);
 
     return 0;
 }
@@ -698,8 +676,8 @@ int bspline_calculate_values_1d(
 int bspline_calculate_values_1d_portable(int argc, void *argv[])
 {
     return bspline_calculate_values_1d(
-        (REAL *)argv[0],
-        *((std::size_t *)argv[1]),
+        *((std::size_t *)argv[0]),
+        (REAL *)argv[1],
         *((std::size_t *)argv[2]),
         (REAL *)argv[3],
         (REAL *)argv[4]);

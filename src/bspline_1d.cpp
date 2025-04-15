@@ -1,191 +1,260 @@
 #include "spline_classes.h"
 
+const int BSpline1D::SPLINE_DEGREE = 3;
 
-// Constructor (initializes an empty coefficient array)
-BSpline1D::BSpline1D(int Nx) : 
-    Nx_(Nx), 
-    coefficients_(nullptr), 
-    coefficients_calculated_(false), 
-    data_initialized_(false) 
-{
-    allocate_knots();
+BSpline1D::BSpline1D(int num_control_points)
+    : num_control_points_(num_control_points) {
+    coefficients_ = new REAL[num_control_points_];
+    init_zero();
+    init_not_a_knot();
 }
 
-// Constructor (accepts precomputed coefficients)
-BSpline1D::BSpline1D(int Nx, REAL* coefficients) : 
-    Nx_(Nx), 
-    coefficients_(coefficients), 
-    coefficients_calculated_(true), 
-    data_initialized_(false) 
-{
-    allocate_knots();
+BSpline1D::BSpline1D(int num_control_points, const REAL* values)
+    : num_control_points_(num_control_points) {
+    coefficients_ = new REAL[num_control_points_];
+    init_zero();
+    init_not_a_knot();
+    calculate_coefficients(values);
 }
 
-// Destructor (frees allocated memory if needed)
-BSpline1D::~BSpline1D() 
-{
-    delete[] knots_;
+
+void BSpline1D::init_zero() {
+    for (int i = 0; i < num_control_points_; ++i) {
+        coefficients_[i] = 0.0;
+    }
 }
 
-// Initialize spline with raw data
-void BSpline1D::initialize(const REAL* data) 
-{
-    if (!data) {
-        data_initialized_ = false;
+
+BSpline1D::~BSpline1D() {
+    delete[] coefficients_;
+}
+
+
+void BSpline1D::init_not_a_knot() {
+    // Number of knots needed for a not-a-knot cubic spline: n + k + 1
+    int n_knots = num_control_points_ + SPLINE_DEGREE + 1;
+    knots_.resize(n_knots);
+
+    // Step 1: Create uniform grid points: x = [0, 1, ..., n-1]
+    std::vector<REAL> x(num_control_points_);
+    for (int i = 0; i < num_control_points_; ++i) {
+        x[i] = static_cast<REAL>(i);
+    }
+
+    // Step 2: Determine how many points to remove from each side (k2 = (k + 1) // 2)
+    int k = SPLINE_DEGREE;
+    int k2 = (k + 1) / 2; // Only valid for odd k
+
+    // Step 3: Insert repeated knots at each boundary (k + 1 copies)
+    for (int i = 0; i <= k; ++i) {
+        knots_[i] = x[0];                        // Start of knot vector
+        knots_[n_knots - 1 - i] = x.back();      // End of knot vector
+    }
+
+    // Step 4: Fill internal knots by skipping the second and second-to-last grid points
+    for (int i = 0; i < num_control_points_ - 2 * k2; ++i) {
+        knots_[i + k + 1] = x[i + k2];
+    }
+}
+
+
+void BSpline1D::evaluate_basis(REAL x, int interval, REAL* basis /* expected size: SPLINE_DEGREE + 1 */) const {
+
+    // Zero-initialize all entries
+    for (int j = 0; j <= SPLINE_DEGREE; ++j) {
+        basis[j] = 0.0;
+    }
+
+    // Special case: last knot
+    if (x == knots_.back()) {
+        basis[SPLINE_DEGREE] = 1.0;
         return;
     }
-    data_ = data;
-    data_initialized_ = true;
+
+    // Initialize zeroth-degree functions
+    for (int j = 0; j <= SPLINE_DEGREE; ++j) {
+        int idx = interval - SPLINE_DEGREE + j;
+        if (idx >= 0 && idx + 1 < knots_.size() && knots_[idx] <= x && x < knots_[idx + 1]) {
+            basis[j] = 1.0;
+        }
+    }
+
+    // Cox–de Boor recursion
+    for (int d = 1; d <= SPLINE_DEGREE; ++d) {
+        for (int j = 0; j <= SPLINE_DEGREE - d; ++j) {
+            int i = interval - SPLINE_DEGREE + j;
+
+            REAL left = 0.0;
+            REAL denom_left = knots_[i + d] - knots_[i];
+            if (denom_left != 0.0) {
+                left = (x - knots_[i]) / denom_left * basis[j];
+            }
+
+            REAL right = 0.0;
+            REAL denom_right = knots_[i + d + 1] - knots_[i + 1];
+            if (denom_right != 0.0) {
+                right = (knots_[i + d + 1] - x) / denom_right * basis[j + 1];
+            }
+
+            basis[j] = left + right;
+        }
+    }
 }
 
 
-// Allocate and initialize the knot vector
-void BSpline1D::allocate_knots() {
-    int num_knots = Nx_ + 6;  // Correct number of knots
-    knots_ = new REAL[num_knots];
+void BSpline1D::evaluate_basis_derivative(REAL x, int interval, REAL* dbasis) const {
+    REAL left[SPLINE_DEGREE + 1];
+    REAL right[SPLINE_DEGREE + 1];
+    REAL ndu[SPLINE_DEGREE + 1][SPLINE_DEGREE + 1] = { 0 };
+    REAL a[2][SPLINE_DEGREE + 1] = { 0 };
 
-    // First four knots (repeated at 0)
-    for (int i = 0; i < 4; i++) {
-        knots_[i] = 0;
+    ndu[0][0] = 1.0;
+
+    for (int j = 1; j <= SPLINE_DEGREE; ++j) {
+        left[j] = x - knots_[interval + 1 - j];
+        right[j] = knots_[interval + j] - x;
+        REAL saved = 0.0;
+        for (int r = 0; r < j; ++r) {
+            ndu[j][r] = right[r + 1] + left[j - r];
+            REAL temp = ndu[r][j - 1] / ndu[j][r];
+            ndu[r][j] = saved + right[r + 1] * temp;
+            saved = left[j - r] * temp;
+        }
+        ndu[j][j] = saved;
     }
 
-    // Internal knots (evenly spaced from 1 to Nx-2)
-    for (int i = 4; i < Nx_ + 2; i++) {
-        knots_[i] = i - 3;
+    for (int j = 0; j <= SPLINE_DEGREE; ++j) {
+        dbasis[j] = 0.0;
     }
 
-    // Last four knots (repeated at Nx-1)
-    for (int i = Nx_ + 2; i < num_knots; i++) {
-        knots_[i] = Nx_ - 1;
+    for (int r = 0; r <= SPLINE_DEGREE; ++r) {
+        int s1 = 0, s2 = 1;
+        a[0][0] = 1.0;
+
+        for (int k = 1; k <= 1; ++k) {  // first derivative only
+            REAL d = 0.0;
+            int rk = r - k;
+            int pk = SPLINE_DEGREE - k;
+            int j1 = (rk >= 0) ? 0 : -rk;
+            int j2 = (r - 1 <= pk) ? k : SPLINE_DEGREE - r;
+
+            for (int j = j1; j <= j2; ++j) {
+                a[s2][j] = (a[s1][j] - a[s1][j - 1]) /
+                    (knots_[interval + r + j + 1 - k] - knots_[interval + r - k + j]);
+                d += a[s2][j] * ndu[r - k + j][pk];
+            }
+            dbasis[r] = d * SPLINE_DEGREE;
+        }
     }
 }
 
 
-// Compute spline coefficients with natural boundary conditions
-void BSpline1D::calculate_coefficients(REAL* coefficients) {
-    if (!data_initialized_ || !coefficients) {
-        return;
+int BSpline1D::find_knot_interval(REAL x) const {
+    int k = SPLINE_DEGREE;
+    int n_knots = static_cast<int>(knots_.size());
+    int max_interval = n_knots - k - 2;  // Last valid interval for evaluation
+
+    // Estimate interval index using floor(x) + offset for repeated boundary knots
+    int interval = static_cast<int>(std::floor(x)) + k;
+
+    // Clamp to valid interval range
+    if (interval < k) {
+        interval = k;
+    }
+    else if (interval > max_interval) {
+        interval = max_interval;
     }
 
-    for (int x = 0; x < Nx_; x++) {
-        int index = x * 4;
-
-        // Function value at control point
-        coefficients[index + 0] = data_[x];
-
-        // First derivative approximation
-        if (x == 0) {
-            coefficients[index + 1] = data_[1] - data_[0]; // Forward difference
-        }
-        else if (x == Nx_ - 1) {
-            coefficients[index + 1] = data_[Nx_ - 1] - data_[Nx_ - 2]; // Backward difference
-        }
-        else {
-            coefficients[index + 1] = (data_[x + 1] - data_[x - 1]) / 2.0; // Central difference
-        }
-
-        // Second derivative approximation (Natural boundary conditions)
-        if (x == 0 || x == Nx_ - 1) {
-            coefficients[index + 2] = 0.0; // Enforce natural boundary
-        }
-        else {
-            coefficients[index + 2] = (data_[x + 1] - 2.0 * data_[x] + data_[x - 1]);
-        }
-
-        // Third derivative approximation
-        if (x < 2 || x > Nx_ - 3) {
-            coefficients[index + 3] = 0.0; // Avoid undefined behavior near boundaries
-        }
-        else {
-            coefficients[index + 3] = (data_[x + 2] - 3.0 * data_[x + 1] + 3.0 * data_[x] - data_[x - 1]);
-        }
-    }
-
-    coefficients_calculated_ = true;
+    return interval;
 }
 
 
-// Compute basis functions using explicit knots
-void BSpline1D::compute_basis_functions(REAL* basis_values, REAL x) const {
-    int i = static_cast<int>(std::floor(x));
-    while (i > 0 && x < knots_[i]) {
-        i--;
+void BSpline1D::calculate_coefficients(const REAL* values) {
+    int n = num_control_points_;
+    Eigen::MatrixXd collocation = Eigen::MatrixXd::Zero(n, n);
+
+    // Build collocation matrix: each row corresponds to one x position
+    for (int row = 0; row < n; ++row) {
+        REAL x = static_cast<REAL>(row);  // regular grid at x = 0, 1, ..., n-1
+        int interval = find_knot_interval(x);
+
+        REAL basis[SPLINE_DEGREE + 1];
+        evaluate_basis(x, interval, basis);
+
+        for (int j = 0; j <= SPLINE_DEGREE; ++j) {
+            int col = interval - SPLINE_DEGREE + j;
+            if (col >= 0 && col < n) {
+                collocation(row, col) = basis[j];
+            }
+        }
     }
-    REAL t = (x - knots_[i]) / (knots_[i + 1] - knots_[i]);
-    basis_values[0] = (REAL(1) / 6) * (1 - t) * (1 - t) * (1 - t);
-    basis_values[1] = (REAL(1) / 6) * (3 * t * t * t - 6 * t * t + 4);
-    basis_values[2] = (REAL(1) / 6) * (-3 * t * t * t + 3 * t * t + 3 * t + 1);
-    basis_values[3] = (REAL(1) / 6) * (t * t * t);
+
+    // Solve collocation * coefficients = values
+    Eigen::VectorXd rhs(n);
+    for (int i = 0; i < n; ++i) rhs[i] = values[i];
+
+    Eigen::VectorXd coeff = collocation.colPivHouseholderQr().solve(rhs);
+
+    for (int i = 0; i < n; ++i) coefficients_[i] = coeff[i];
 }
 
-// Compute cubic B-spline derivative basis functions for a given position
-void BSpline1D::compute_derivative_basis_functions(REAL* basis_derivatives, REAL x) const {
-    REAL t = x - std::floor(x);
-    basis_derivatives[0] = (-0.5f) * (1 - t) * (1 - t);
-    basis_derivatives[1] = (1.5f * t * t - 2 * t);
-    basis_derivatives[2] = (-1.5f * t * t + t + 0.5f);
-    basis_derivatives[3] = (0.5f * t * t);
-}
 
-// Evaluate the B-spline function
 REAL BSpline1D::evaluate(REAL x) const {
-    if (!coefficients_calculated_) {
-        return 0.0;
+    if (x < knots_.front() || x > knots_.back()) {
+        return 0.0; // or handle extrapolation policy
     }
 
-    REAL basis_values[4];
-    compute_basis_functions(basis_values, x);
+    // Use fast interval lookup assuming uniform spacing
+    int interval = find_knot_interval(x);
 
-    int i = static_cast<int>(std::floor(x));
-    if (i < 0) {
-        i = 0;
-    }
-    else if (i > N_control_ - 4) { // Ensure at least 4 control points exist
-        i = N_control_ - 4;
-    }
+    // Evaluate basis functions
+    REAL basis[SPLINE_DEGREE + 1];
+    evaluate_basis(x, interval, basis);
 
-    REAL value = 0.0;
-    for (int a = 0; a < 4; ++a) {
-        for (int b = 0; b < 4; ++b) { // Iterate over all coefficients
-            int index = (i + a) * 4 + b;
-            value += coefficients_[index] * basis_values[a];
+    // Accumulate weighted sum
+    REAL result = 0.0;
+    for (int j = 0; j <= SPLINE_DEGREE; ++j) {
+        int idx = interval - SPLINE_DEGREE + j;
+        if (idx >= 0 && idx < num_control_points_) {
+            result += coefficients_[idx] * basis[j];
         }
     }
 
-    return value;
+    return result;
 }
 
 
-// Evaluate the B-spline function and its first derivative
-void BSpline1D::evaluate_with_derivative(REAL x, REAL& function_value, REAL& dx) const {
-    if (!coefficients_calculated_) {
-        function_value = dx = 0.0;
-        return;
+REAL BSpline1D::evaluate_derivative(REAL x) const {
+    if (x < knots_.front() || x > knots_.back()) {
+        return 0.0; // or handle extrapolation policy
     }
 
-    REAL basis_values[4], basis_derivatives[4];
-    compute_basis_functions(basis_values, x);
-    compute_derivative_basis_functions(basis_derivatives, x);
+    int interval = find_knot_interval(x);
 
-    int i = static_cast<int>(x);
-    i = std::max(0, std::min(i, Nx_ - 2));
+    // Evaluate derivative basis functions
+    REAL dbasis[SPLINE_DEGREE + 1];
+    evaluate_basis_derivative(x, interval, dbasis);
 
-    function_value = dx = 0.0;
-    for (int a = 0; a < 4; ++a) {
-        int index = (i + a) * 4;
-        function_value += coefficients_[index] * basis_values[a];
-        dx += coefficients_[index] * basis_derivatives[a];
+    REAL result = 0.0;
+    for (int j = 0; j <= SPLINE_DEGREE; ++j) {
+        int idx = interval - SPLINE_DEGREE + j;
+        if (idx >= 0 && idx < num_control_points_) {
+            result += coefficients_[idx] * dbasis[j];
+        }
+    }
+
+    return result;
+}
+
+void BSpline1D::calculate_values(const REAL* x_values, int num_points, REAL* output_values) const {
+    for (int i = 0; i < num_points; ++i) {
+        output_values[i] = evaluate(x_values[i]);
     }
 }
 
-// calls calculate_value() iteratively
-void BSpline1D::calculate_values(
-    REAL * bspline_values,
-    REAL const * x_values,
-    std::size_t const size_x)
-{
-    for (std::size_t x_index = 0; x_index < size_x; x_index++)
-    {
-        bspline_values[x_index] = evaluate(x_values[x_index]);
+
+void BSpline1D::calculate_derivatives(const REAL* x_values, int num_points, REAL* output_derivatives) const {
+    for (int i = 0; i < num_points; ++i) {
+        output_derivatives[i] = evaluate_derivative(x_values[i]);
     }
 }

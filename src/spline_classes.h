@@ -10,7 +10,9 @@
 #include <cstddef>
 #include <limits>
 #include <algorithm>
+#include "libs/Eigen/Dense"
 
+#include "bspline_1d.h"
 
 // TODO maybe we also want to calculate derivatives
 
@@ -416,57 +418,6 @@ private:
     std::size_t const n_intervals_v_;
     bool coefficients_calculated_;
     bool data_initialized_;
-};
-
-
-
-class BSpline1D {
-public:
-    // Constructors and Destructor
-    BSpline1D(int Nx);
-    BSpline1D(int Nx, REAL* coefficients);
-    ~BSpline1D();
-
-    // Initialize coefficients from raw data
-    void initialize(const REAL* data);
-
-    // Compute spline coefficients
-    void calculate_coefficients(REAL* coefficients);
-
-    // given a list of x values calls the function below iteratively
-    void calculate_values(
-        REAL * bspline_values,
-        REAL const * x_values,
-        std::size_t size_x);
-
-    // Evaluate the B-spline function
-    REAL evaluate(REAL x) const;
-
-    // Evaluate the B-spline function and its first derivative
-    void evaluate_with_derivative(REAL x, REAL& function_value, REAL& dx) const;
-
-private:
-    // Grid size
-    int Nx_;
-
-    // Store total control points
-    int N_control_;
-    
-    // data storage
-    REAL const * data_;
-    bool data_initialized_;
-
-    // Coefficient storage
-    REAL* coefficients_;
-    bool coefficients_calculated_;
-
-    // Knot vector storage
-    REAL* knots_;
-
-    // Utility functions
-    void allocate_knots();
-    void compute_basis_functions(REAL* basis_values, REAL x) const;
-    void compute_derivative_basis_functions(REAL* basis_derivatives, REAL x) const;
 };
 
 
