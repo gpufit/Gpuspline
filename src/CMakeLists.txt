@@ -105,12 +105,13 @@ endif()
 
 # splines
 
-set( splinesHeaders
+set(splinesHeaders
     spline.h
     spline_classes.h
     definitions.h
     equation_system.h
-	math_utils.h
+    math_utils.h
+    bspline_1d.h
 )
 
 set( splinesSources
@@ -132,17 +133,23 @@ add_library( splines SHARED
     ${splinesSources}
 )
 
-set_target_properties( splines
-    PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}"
-        CXX_VISIBILITY_PRESET hidden
+target_include_directories(splines
+    PUBLIC ${PROJECT_SOURCE_DIR}
 )
 
-# tests
+target_compile_definitions(splines PRIVATE SPLINES_BUILD_DLL)
+
+set_target_properties(splines PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}"
+    CXX_VISIBILITY_PRESET hidden
+)
+
+# === spline_tests executable ===
 
 add_executable( splines_tests
     spline_tests.cpp
 )
+
 target_include_directories( splines_tests PRIVATE ${PROJECT_SOURCE_DIR} )
 target_link_libraries( splines_tests splines )
 
@@ -150,6 +157,25 @@ set_target_properties( splines_tests
     PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}"
         CXX_VISIBILITY_PRESET hidden
+)
+
+# === bspline_tests executable ===
+
+add_executable(bspline_tests
+    bspline_tests.cpp
+)
+
+target_link_libraries(bspline_tests
+    PRIVATE splines
+)
+
+target_include_directories(bspline_tests
+    PRIVATE ${PROJECT_SOURCE_DIR}
+)
+
+set_target_properties(bspline_tests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}"
+    CXX_VISIBILITY_PRESET hidden
 )
 
 # Matlab binding

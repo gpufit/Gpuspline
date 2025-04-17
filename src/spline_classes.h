@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <limits>
 #include <algorithm>
+#include <iostream>
 #include "libs/Eigen/Dense"
 
 #include "bspline_1d.h"
