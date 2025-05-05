@@ -58,6 +58,7 @@ void BSpline1D::init_not_a_knot() {
 }
 
 
+
 void BSpline1D::init_uniform_clamped() {
     int k = SPLINE_DEGREE;
     int n_knots = num_control_points_ + k + 1;
@@ -224,6 +225,14 @@ void BSpline1D::calculate_coefficients(const REAL* values) {
     // Solve collocation * coefficients = values
     Eigen::VectorXd rhs(n);
     for (int i = 0; i < n; ++i) rhs[i] = values[i];
+
+    std::cout << "\nDesign matrix A (" << collocation.rows() << " x " << collocation.cols() << "):\n";
+    std::cout << collocation << "\n";
+
+    std::cout << "Right-hand side y:\n";
+    for (int i = 0; i < n; ++i) {
+        std::cout << "  y[" << i << "] = " << rhs(i) << "\n";
+    }
 
     Eigen::VectorXd coeff = collocation.colPivHouseholderQr().solve(rhs);
 

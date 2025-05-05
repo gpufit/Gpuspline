@@ -8,7 +8,7 @@ int main() {
 
     // Define N and test data
     const int N = 10;
-    float data[N];
+    REAL data[N];
     for (int i = 0; i < N; ++i) {
         data[i] = std::sin(2.0f * M_PI * i / N);
     }

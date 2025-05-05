@@ -112,6 +112,11 @@ set(splinesHeaders
     equation_system.h
     math_utils.h
     bspline_1d.h
+	bspline_fast_cubic_basis_evaluate.h
+	natural_bspline_1d.h
+	natural_bspline_nd.h
+	lsq_bspline_1d.h
+	libs/fitpack/gpuspline_fitpack_functions.h
 )
 
 set( splinesSources
@@ -124,8 +129,12 @@ set( splinesSources
 	spline_5d.cpp
 	bspline_1d.cpp
 	bspline_5d.cpp
+	natural_bspline_1d.cpp
+	natural_bspline_nd.cpp
+    lsq_bspline_1d.cpp
     equation_system.cpp
 	regrid_data.cpp
+	libs/fitpack/gpuspline_fitpack_functions.cpp
 )
 
 add_library( splines SHARED
@@ -178,6 +187,47 @@ set_target_properties(bspline_tests PROPERTIES
     CXX_VISIBILITY_PRESET hidden
 )
 
+
+# === natural_bspline_tests executable ===
+
+add_executable(natural_bspline_tests
+    natural_bspline_tests.cpp
+)
+
+target_link_libraries(natural_bspline_tests
+    PRIVATE splines
+)
+
+target_include_directories(natural_bspline_tests
+    PRIVATE ${PROJECT_SOURCE_DIR}
+)
+
+set_target_properties(natural_bspline_tests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}"
+    CXX_VISIBILITY_PRESET hidden
+)
+
+
+
+# === lsq_bspline_tests executable ===
+
+add_executable(lsq_bspline_tests
+    lsq_bspline_tests.cpp
+)
+
+target_link_libraries(lsq_bspline_tests
+    PRIVATE splines
+)
+
+target_include_directories(lsq_bspline_tests
+    PRIVATE ${PROJECT_SOURCE_DIR}
+)
+
+set_target_properties(lsq_bspline_tests PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}"
+    CXX_VISIBILITY_PRESET hidden
+)
+
 # Matlab binding
 
 add_subdirectory( matlab )
@@ -185,3 +235,4 @@ add_subdirectory( matlab )
 # Python binding
 
 add_subdirectory( python )
+

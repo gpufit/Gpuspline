@@ -11,9 +11,19 @@
 #include <limits>
 #include <algorithm>
 #include <iostream>
+#include <cassert>
+#include <iomanip>
+#include <numeric>
+
 #include "libs/Eigen/Dense"
+#include "libs/fitpack/gpuspline_fitpack_functions.h"
+
+#include "bspline_fast_cubic_basis_evaluate.h"
 
 #include "bspline_1d.h"
+#include "natural_bspline_1d.h"
+#include "natural_bspline_nd.h"
+#include "lsq_bspline_1d.h"
 
 // TODO maybe we also want to calculate derivatives
 
