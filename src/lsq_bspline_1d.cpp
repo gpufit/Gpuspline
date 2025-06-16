@@ -1,4 +1,5 @@
 #include "spline_classes.h"
+#include "libs/Eigen/Dense"
 
 LSQ_BSpline_1D::LSQ_BSpline_1D()
     : num_data_points_(0), num_control_points_(0), num_knots_(0),

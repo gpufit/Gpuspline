@@ -121,16 +121,21 @@ set(splinesHeaders
 
 set( splinesSources
     spline.def
-    spline.cpp
     spline_1d.cpp
     spline_2d.cpp
     spline_3d.cpp
 	spline_4d.cpp
 	spline_5d.cpp
+    spline_1d_c_interface.cpp
+    spline_2d_c_interface.cpp
+    spline_3d_c_interface.cpp
+	spline_4d_c_interface.cpp
+	spline_5d_c_interface.cpp
 	bspline_1d.cpp
 	bspline_5d.cpp
 	natural_bspline_1d.cpp
 	natural_bspline_nd.cpp
+	natural_bspline_nd_c_interface.cpp
     lsq_bspline_1d.cpp
     equation_system.cpp
 	regrid_data.cpp

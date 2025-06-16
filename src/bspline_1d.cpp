@@ -1,4 +1,5 @@
 #include "spline_classes.h"
+#include "libs/Eigen/Dense"
 
 BSpline1D::BSpline1D(int num_control_points)
     : num_control_points_(num_control_points) {

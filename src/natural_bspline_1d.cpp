@@ -1,4 +1,7 @@
-#include "spline_classes.h"
+
+#include "natural_bspline_1d.h"
+#include "libs/fitpack/gpuspline_fitpack_functions.h"
+#include "bspline_fast_cubic_basis_evaluate.h"
 
 Natural_BSpline_1D::Natural_BSpline_1D(int num_data_points)
     : num_data_points_(num_data_points), 
@@ -56,18 +59,19 @@ void Natural_BSpline_1D::init_knot_vector() {
     // This assumes data points are uniformly spaced from 0 to N-1.
     // For more general spacing, adapt this loop accordingly.
 
+    int i;
     int k = SPLINE_DEGREE;
     int N = num_data_points_;
 
-    for (int i = 0; i < k; ++i) {
+    for (i = 0; i < k; ++i) {
         knots_[i] = 0.0f;  // Repeat first x-value (assumed 0.0)
     }
 
-    for (int i = 0; i < N; ++i) {
+    for (i = 0; i < N; ++i) {
         knots_[k + i] = static_cast<REAL>(i);
     }
 
-    for (int i = 0; i < k; ++i) {
+    for (i = 0; i < k; ++i) {
         knots_[k + N + i] = static_cast<REAL>(N - 1);  // Repeat last x-value
     }
 
@@ -89,11 +93,13 @@ int Natural_BSpline_1D::find_knot_interval(REAL x) const {
 
 
 void Natural_BSpline_1D::evaluate_basis(const REAL x, const int span, const int derivative_order, REAL* result) const {
+
+    int i;
     constexpr int degree = SPLINE_DEGREE;
 
     // Convert knot vector to double for FITPACK
     std::vector<double> double_knots(num_knots_);
-    for (int i = 0; i < num_knots_; ++i) {
+    for (i = 0; i < num_knots_; ++i) {
         double_knots[i] = static_cast<double>(knots_[i]);
     }
 
@@ -106,12 +112,12 @@ void Natural_BSpline_1D::evaluate_basis(const REAL x, const int span, const int 
         double_knots.data(),
         input_x,
         degree,
-        span,
+        static_cast<int>(span),
         derivative_order,
         wrk
     );
 
-    for (int i = 0; i <= degree; ++i) {
+    for (i = 0; i <= degree; ++i) {
         result[i] = static_cast<REAL>(wrk[i]);
     }
 }
@@ -176,6 +182,9 @@ inline void Natural_BSpline_1D::evaluate_fast_cubic_basis_derivative(const REAL 
 
 REAL Natural_BSpline_1D::evaluate(REAL x) const {
 
+    int i;
+    int idx;
+
     assert(coefficients_ready_ == true);
 
     int span = find_knot_interval(x);
@@ -189,8 +198,8 @@ REAL Natural_BSpline_1D::evaluate(REAL x) const {
     }
 
     REAL result = 0.0;
-    for (int i = 0; i <= SPLINE_DEGREE; ++i) {
-        int idx = span - SPLINE_DEGREE + i;
+    for (i = 0; i <= SPLINE_DEGREE; ++i) {
+        idx = span - SPLINE_DEGREE + i;
         if (idx >= 0 && idx < num_control_points_) {
             result += basis[i] * coefficients_[idx];
         }
@@ -199,6 +208,9 @@ REAL Natural_BSpline_1D::evaluate(REAL x) const {
 }
 
 REAL Natural_BSpline_1D::evaluate_derivative(REAL x) const {
+
+    int i;
+    int idx;
 
     assert(coefficients_ready_ == true);
 
@@ -213,8 +225,8 @@ REAL Natural_BSpline_1D::evaluate_derivative(REAL x) const {
     }
 
     REAL result = 0.0;
-    for (int i = 0; i <= SPLINE_DEGREE; ++i) {
-        int idx = span - SPLINE_DEGREE + i;
+    for (i = 0; i <= SPLINE_DEGREE; ++i) {
+        idx = span - SPLINE_DEGREE + i;
         if (idx >= 0 && idx < num_control_points_) {
             result += dbasis[i] * coefficients_[idx];
         }
@@ -224,24 +236,28 @@ REAL Natural_BSpline_1D::evaluate_derivative(REAL x) const {
 }
 
 void Natural_BSpline_1D::calculate_coefficients(const REAL* values) {
+
+    int i, j;
+    int col;
+    int span;
     constexpr int p = SPLINE_DEGREE;
     const int N = num_data_points_;
     const int M = num_control_points_;
 
     // Resize and zero-out A_ and b_ in double precision
-    A_ = Eigen::MatrixXd::Zero(M, M);
-    b_ = Eigen::VectorXd::Zero(M);
+    A_ = Eigen::MatrixXd::Zero(static_cast<Eigen::Index>(M), static_cast<Eigen::Index>(M));
+    b_ = Eigen::VectorXd::Zero(static_cast<Eigen::Index>(M));
 
     // Fill interior rows with basis values at data points
-    for (int i = 0; i < N; ++i) {
+    for (i = 0; i < N; ++i) {
         REAL x = static_cast<REAL>(i); // Assume data points at x = 0, 1, ..., N-1
-        int span = find_knot_interval(x);
+        span = find_knot_interval(x);
 
         REAL basis[p + 1] = {};
         evaluate_basis(x, span, 0, basis);
 
-        for (int j = 0; j <= p; ++j) {
-            int col = span - p + j;
+        for (j = 0; j <= p; ++j) {
+            col = span - p + j;
             if (col >= 0 && col < M) {
                 A_(i, col) = static_cast<double>(basis[j]);
             }
@@ -253,11 +269,11 @@ void Natural_BSpline_1D::calculate_coefficients(const REAL* values) {
     // Add natural boundary condition at start (second derivative = 0)
     {
         REAL dd_basis[p + 1] = {};
-        int span = find_knot_interval(knots_[p]); // Evaluate at first interior knot
+        span = find_knot_interval(knots_[p]); // Evaluate at first interior knot
         //evaluate_basis_second_derivative(knots_[p], span, dd_basis);
         evaluate_basis(knots_[p], span, 2, dd_basis);
-        for (int j = 0; j <= p; ++j) {
-            int col = span - p + j;
+        for (j = 0; j <= p; ++j) {
+            col = span - p + j;
             if (col >= 0 && col < M) {
                 A_(N, col) = static_cast<double>(dd_basis[j]);
             }
@@ -269,11 +285,11 @@ void Natural_BSpline_1D::calculate_coefficients(const REAL* values) {
     {
         REAL dd_basis[p + 1] = {};
         REAL x = static_cast<REAL>(N - 1);
-        int span = find_knot_interval(x); // Evaluate at last interior knot
+        span = find_knot_interval(x); // Evaluate at last interior knot
         //evaluate_basis_second_derivative(knots_[M - 1], span, dd_basis);
         evaluate_basis(x, span, 2, dd_basis);
-        for (int j = 0; j <= p; ++j) {
-            int col = span - p + j;
+        for (j = 0; j <= p; ++j) {
+            col = span - p + j;
             if (col >= 0 && col < M) {
                 A_(N + 1, col) = static_cast<double>(dd_basis[j]);
             }
@@ -284,7 +300,7 @@ void Natural_BSpline_1D::calculate_coefficients(const REAL* values) {
     // Solve linear system
     Eigen::VectorXd x = A_.colPivHouseholderQr().solve(b_);
 
-    for (int i = 0; i < M; ++i) {
+    for (i = 0; i < M; ++i) {
         coefficients_[i] = static_cast<REAL>(x(i));
     }
 
@@ -304,21 +320,3 @@ void Natural_BSpline_1D::calculate_derivatives(const REAL* x_values, int num_poi
     }
 }
 
-void Natural_BSpline_1D::debug_compare_basis(REAL x) {
-    constexpr int p = SPLINE_DEGREE;
-    int span = find_knot_interval(x);
-
-    REAL slow[p + 1] = {};
-    REAL fast[p + 1] = {};
-
-    evaluate_basis(x, span, 0, slow);
-    evaluate_fast_cubic_basis(x, span, fast);  // FIXED
-
-    for (int j = 0; j <= p; ++j) {
-        std::cout << std::setw(4) << "i=" << (span - p + j)
-            << "  span=" << std::setw(10) << span
-            << "  slow=" << std::setw(10) << slow[j]
-            << "  fast=" << std::setw(10) << fast[j] << "\n";
-
-    }
-}

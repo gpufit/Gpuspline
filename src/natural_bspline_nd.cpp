@@ -1,5 +1,9 @@
-#include "spline_classes.h"
 
+#include <numeric>
+#include "natural_bspline_1d.h"
+#include "natural_bspline_nd.h"
+#include "libs/fitpack/gpuspline_fitpack_functions.h"
+#include "bspline_fast_cubic_basis_evaluate.h"
 
 Natural_BSpline_ND::Natural_BSpline_ND(const std::vector<int>& data_dims, const REAL* data_values)
     : num_dims_(static_cast<int>(data_dims.size())), data_dims_(data_dims) {
@@ -14,21 +18,11 @@ Natural_BSpline_ND::Natural_BSpline_ND(const std::vector<int>& data_dims, const 
         control_point_dims_[i] = data_dims[i] + 2;
     }
 
-    //// Compute strides for flattened indexing
-    //data_strides_.resize(num_dims_);
-    //data_strides_[num_dims_ - 1] = 1;
-    //for (int i = num_dims_ - 2; i >= 0; --i) {
-    //    data_strides_[i] = data_strides_[i + 1] * data_dims_[i + 1];
-    //}
-
-    //control_point_strides_.resize(num_dims_);
-    //control_point_strides_[num_dims_ - 1] = 1;
-    //for (int i = num_dims_ - 2; i >= 0; --i) {
-    //    control_point_strides_[i] = control_point_strides_[i + 1] * control_point_dims_[i + 1];
-    //}
-
     total_data_points_ = std::accumulate(data_dims_.begin(), data_dims_.end(), 1, std::multiplies<int>());
     total_control_points_ = std::accumulate(control_point_dims_.begin(), control_point_dims_.end(), 1, std::multiplies<int>());
+
+    // Initialize stride vectors
+    init_stride_vectors();
 
     // Initialize multi-indices
     build_multi_indices();
@@ -66,6 +60,9 @@ Natural_BSpline_ND::Natural_BSpline_ND(const std::vector<int>& data_dims,
     total_data_points_ = std::accumulate(data_dims_.begin(), data_dims_.end(), 1, std::multiplies<int>());
     total_control_points_ = std::accumulate(control_point_dims_.begin(), control_point_dims_.end(), 1, std::multiplies<int>());
 
+    // Initialize stride vectors
+    init_stride_vectors();
+
     // Initialise knot vectors for each dimension
     init_knot_vectors();
 }
@@ -80,6 +77,21 @@ bool Natural_BSpline_ND::get_fast_evaluation() {
 
 void Natural_BSpline_ND::set_fast_evaluation(bool flag) {
     use_fast_evaluation_ = flag;
+}
+
+void Natural_BSpline_ND::init_stride_vectors() {
+
+    // Compute strides for flattened indexing
+    data_strides_.resize(num_dims_);
+    data_strides_[num_dims_ - 1] = 1;
+    for (int i = num_dims_ - 2; i >= 0; --i)
+        data_strides_[i] = data_strides_[i + 1] * data_dims_[i + 1];
+
+    control_point_strides_.resize(num_dims_);
+    control_point_strides_[num_dims_ - 1] = 1;
+    for (int i = num_dims_ - 2; i >= 0; --i)
+        control_point_strides_[i] = control_point_strides_[i + 1] * control_point_dims_[i + 1];
+
 }
 
 void Natural_BSpline_ND::build_multi_indices() {
@@ -148,7 +160,7 @@ inline void Natural_BSpline_ND::evaluate_basis_fitpack(REAL x, const std::vector
     constexpr int degree = SPLINE_DEGREE;
 
     std::vector<double> d_knots(knots.size());
-    for (size_t i = 0; i < knots.size(); ++i) {
+    for (int i = 0; i < knots.size(); ++i) {
         d_knots[i] = static_cast<double>(knots[i]);
     }
 
@@ -344,12 +356,7 @@ REAL Natural_BSpline_ND::evaluate(const std::vector<REAL>& x) const {
         ctrl_offset[dim] = spans[dim] - degree;
     }
 
-    // Correct strides based on control_point_dims_, not data_dims_
-    std::vector<int> strides(num_dims);
-    strides[0] = 1;
-    for (int dim = 1; dim < num_dims; ++dim) {
-        strides[dim] = strides[dim - 1] * control_point_dims_[dim - 1];
-    }
+    const std::vector<int>& strides = control_point_strides_;
 
     const int basis_combinations = static_cast<int>(std::pow(degree + 1, num_dims));
 
@@ -398,7 +405,7 @@ REAL Natural_BSpline_ND::evaluate_derivative(const std::vector<REAL>& x, int d_t
                 evaluate_fast_cubic_basis(x[d], span, d, basis[d].data());
             }
             else {
-                evaluate_basis_fitpack(x[d], knot_vectors_[d], span, 1, derivative.data());
+                evaluate_basis_fitpack(x[d], knot_vectors_[d], span, 0, basis[d].data());
             }
         }
     }
@@ -407,10 +414,7 @@ REAL Natural_BSpline_ND::evaluate_derivative(const std::vector<REAL>& x, int d_t
     REAL result = 0.0;
 
     std::vector<int> ctrl_offset(D);
-    std::vector<int> strides(D);
-    strides[D - 1] = 1;
-    for (int d = D - 2; d >= 0; --d)
-        strides[d] = strides[d + 1] * data_dims_[d + 1];
+    const std::vector<int>& strides = control_point_strides_;
 
     for (int d = 0; d < D; ++d)
         ctrl_offset[d] = spans[d] - p;
@@ -437,19 +441,19 @@ REAL Natural_BSpline_ND::evaluate_derivative(const std::vector<REAL>& x, int d_t
 }
 
 void Natural_BSpline_ND::evaluate_batch(const std::vector<std::vector<REAL>>& points, std::vector<REAL>& output) const {
-    size_t num_points = points.size();
+    int num_points = points.size();
     output.resize(num_points);
 
-    for (size_t i = 0; i < num_points; ++i) {
+    for (int i = 0; i < num_points; ++i) {
         output[i] = evaluate(points[i]);
     }
 }
 
 void Natural_BSpline_ND::evaluate_batch_derivatives(const std::vector<std::vector<REAL>>& points, int dimension, std::vector<REAL>& output) const {
-    size_t num_points = points.size();
+    int num_points = points.size();
     output.resize(num_points);
 
-    for (size_t i = 0; i < num_points; ++i) {
+    for (int i = 0; i < num_points; ++i) {
         output[i] = evaluate_derivative(points[i], dimension);  // Each element is a vector of size ndim_
     }
 }

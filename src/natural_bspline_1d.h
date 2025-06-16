@@ -2,6 +2,11 @@
 #define NATURAL_BSPLINE_1D_H_INCLUDED
 
 
+#include <cstddef>
+#include "libs/Eigen/Dense"
+#include "definitions.h"
+
+
 #ifdef _WIN32
 #  ifdef SPLINES_BUILD_DLL
 #    define SPLINE_API __declspec(dllexport)
@@ -23,7 +28,6 @@ public:
     static constexpr int SPLINE_DEGREE = 3;
 
     // Constructors
-    Natural_BSpline_1D();
     Natural_BSpline_1D(int num_data_points);
     Natural_BSpline_1D(int num_data_points, const REAL* values);
 
@@ -82,7 +86,6 @@ private:
     void evaluate_fast_cubic_basis(const REAL x, const int span, REAL* basis) const;
     void evaluate_fast_cubic_basis_derivative(const REAL x, const int span, REAL* dbasis) const;
 };
-
 
 
 #endif

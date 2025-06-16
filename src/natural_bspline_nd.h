@@ -2,6 +2,14 @@
 #define NATURAL_BSPLINE_ND_H_INCLUDED
 
 
+#include <vector>
+#include <array>
+#include <cstddef>
+#include <cassert>
+#include <cmath>
+#include "definitions.h"
+
+
 #ifdef _WIN32
 #  ifdef SPLINES_BUILD_DLL
 #    define SPLINE_API __declspec(dllexport)
@@ -51,6 +59,7 @@ public:
     int dimension() const { return num_dims_; }
     const std::vector<int>& shape() const { return data_dims_; }
     const std::vector<REAL>& coefficients() const { return coefficients_; }
+    const std::vector<std::array<int, MAX_NDIMS>>& multi_indices() const { return multi_indices_; }
 
 private:
     int num_dims_;
@@ -60,9 +69,9 @@ private:
     bool use_fast_evaluation_;
 
     std::vector<int> data_dims_;
-    //std::vector<int> data_strides_;
+    std::vector<int> data_strides_;
     std::vector<int> control_point_dims_;
-    //std::vector<int> control_point_strides_;
+    std::vector<int> control_point_strides_;
 
     std::vector<std::array<int, MAX_NDIMS>> multi_indices_; // precomputed multi-index combinations
 
@@ -70,6 +79,7 @@ private:
     std::vector<std::vector<REAL>> knot_vectors_;  // one knot vector per dimension
 
     // Internal utilities
+    void init_stride_vectors();
     void init_knot_vectors();
     void calculate_coefficients(const REAL* values);
     int find_knot_interval(REAL x, int dimension) const;
@@ -82,8 +92,6 @@ private:
 
     // Flatten multi-index (i0, i1, ..., id-1) to linear index
     void build_multi_indices();
-    //int flatten_multi_index(int i, int slice_idx) const;
-    //int flatten_multi_index_control(int i, int slice_idx) const;
 };
 
 #endif
