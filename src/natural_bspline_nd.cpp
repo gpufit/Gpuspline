@@ -36,10 +36,10 @@ Natural_BSpline_ND::Natural_BSpline_ND(const std::vector<int>& data_dims, const 
 
 Natural_BSpline_ND::Natural_BSpline_ND(const std::vector<int>& data_dims,
                                        const std::vector<REAL>& coefficients,
-                                       const std::vector<std::array<int, MAX_NDIMS>>& multi_indices)
+                                       const std::vector<int>& multi_indices)
     : data_dims_(data_dims),
     num_dims_(static_cast<int>(data_dims.size())),
-    multi_indices_(multi_indices),
+    multi_indices_flat_(multi_indices),
     coefficients_(coefficients)
 {
     constexpr int degree = SPLINE_DEGREE;
@@ -56,9 +56,11 @@ Natural_BSpline_ND::Natural_BSpline_ND(const std::vector<int>& data_dims,
     }
 
     assert(static_cast<int>(coefficients.size()) == total_expected);
+    assert(static_cast<int>(multi_indices_flat_.size()) % num_dims_ == 0);
 
     total_data_points_ = std::accumulate(data_dims_.begin(), data_dims_.end(), 1, std::multiplies<int>());
     total_control_points_ = std::accumulate(control_point_dims_.begin(), control_point_dims_.end(), 1, std::multiplies<int>());
+    num_combinations_ = static_cast<int>(multi_indices_flat_.size()) / num_dims_;
 
     // Initialize stride vectors
     init_stride_vectors();
@@ -83,14 +85,14 @@ void Natural_BSpline_ND::init_stride_vectors() {
 
     // Compute strides for flattened indexing
     data_strides_.resize(num_dims_);
-    data_strides_[num_dims_ - 1] = 1;
-    for (int i = num_dims_ - 2; i >= 0; --i)
-        data_strides_[i] = data_strides_[i + 1] * data_dims_[i + 1];
+    data_strides_[0] = 1;
+    for (int i = 1; i < num_dims_; ++i)
+        data_strides_[i] = data_strides_[i - 1] * data_dims_[i - 1];
 
     control_point_strides_.resize(num_dims_);
-    control_point_strides_[num_dims_ - 1] = 1;
-    for (int i = num_dims_ - 2; i >= 0; --i)
-        control_point_strides_[i] = control_point_strides_[i + 1] * control_point_dims_[i + 1];
+    control_point_strides_[0] = 1;
+    for (int i = 1; i < num_dims_; ++i)
+        control_point_strides_[i] = control_point_strides_[i - 1] * control_point_dims_[i - 1];
 
 }
 
@@ -98,19 +100,15 @@ void Natural_BSpline_ND::build_multi_indices() {
     constexpr int degree = SPLINE_DEGREE;
     const int num_dims = num_dims_;
 
-    const int basis_combinations = static_cast<int>(std::pow(degree + 1, num_dims));
-    multi_indices_.reserve(basis_combinations);
+    num_combinations_ = static_cast<int>(std::pow(degree + 1, num_dims));
+    multi_indices_flat_.resize(num_combinations_ * num_dims);
 
-    for (int flat_idx = 0; flat_idx < basis_combinations; ++flat_idx) {
-        int r = flat_idx;
-        std::array<int, MAX_NDIMS> indices = {}; // initialize to 0
-
-        for (int dim = 0; dim < num_dims; ++dim) {
-            indices[dim] = r % (degree + 1);
-            r /= (degree + 1);
+    for (int i = 0; i < num_combinations_; ++i) {
+        int val = i;
+        for (int d = 0; d < num_dims_; ++d) {  // now row-major
+            multi_indices_flat_[i * num_dims_ + d] = val % (degree + 1);
+            val /= (degree + 1);
         }
-
-        multi_indices_.push_back(std::move(indices));
     }
 }
 
@@ -322,18 +320,17 @@ void Natural_BSpline_ND::calculate_coefficients(const REAL* values) {
     coefficients_ = std::move(temp_values);
 }
 
-REAL Natural_BSpline_ND::evaluate(const std::vector<REAL>& x) const {
-    assert(x.size() == data_dims_.size());
+REAL Natural_BSpline_ND::evaluate(const REAL* pt) const {
 
     constexpr int degree = SPLINE_DEGREE;
-    const int num_dims = static_cast<int>(data_dims_.size());
+    const int num_dims = num_dims_;
 
     std::vector<std::array<REAL, degree + 1>> basis_values(num_dims);
     std::vector<int> spans(num_dims);
 
     // Step 1: Compute spans and basis functions in each dimension
     for (int dim = 0; dim < num_dims; ++dim) {
-        const REAL x_dim = x[dim];
+        const REAL x_dim = pt[dim];
         const auto& knots = knot_vectors_[dim];
 
         int span = find_knot_interval(x_dim, dim);
@@ -358,15 +355,14 @@ REAL Natural_BSpline_ND::evaluate(const std::vector<REAL>& x) const {
 
     const std::vector<int>& strides = control_point_strides_;
 
-    const int basis_combinations = static_cast<int>(std::pow(degree + 1, num_dims));
-
-    for (const auto& indices : multi_indices_) {
+    for (int i = 0; i < num_combinations_; ++i) {
         REAL weight = 1.0;
         int coeff_idx = 0;
 
         for (int dim = 0; dim < num_dims; ++dim) {
-            weight *= basis_values[dim][indices[dim]];
-            int idx = ctrl_offset[dim] + indices[dim];
+            int basis_idx = multi_indices_flat_[i * num_dims_ + dim];
+            weight *= basis_values[dim][basis_idx];
+            int idx = ctrl_offset[dim] + basis_idx;
             coeff_idx += idx * strides[dim];
         }
 
@@ -376,62 +372,67 @@ REAL Natural_BSpline_ND::evaluate(const std::vector<REAL>& x) const {
     return result;
 }
 
-REAL Natural_BSpline_ND::evaluate_derivative(const std::vector<REAL>& x, int d_target) const {
-    assert(x.size() == num_dims_);
-    assert(d_target >= 0 && d_target < static_cast<int>(num_dims_));
+REAL Natural_BSpline_ND::evaluate_derivative(const REAL* pt, int d_target) const {
 
-    constexpr int p = SPLINE_DEGREE;
-    const int D = static_cast<int>(num_dims_);
+    constexpr int degree = SPLINE_DEGREE;
+    const int num_dims = num_dims_;
 
-    std::vector<std::array<REAL, p + 1>> basis(D);
-    std::array<REAL, p + 1> derivative = {};
-    std::vector<int> spans(D);
+    std::vector<std::array<REAL, degree + 1>> basis_values(num_dims);
+    std::array<REAL, degree + 1> derivative_values;
+    std::vector<int> spans(num_dims);
 
     // Step 1: Evaluate basis and derivative basis functions
-    for (int d = 0; d < D; ++d) {
-        int span = find_knot_interval(x[d], d);
-        spans[d] = span;
+    for (int dim = 0; dim < num_dims; ++dim) {
 
-        if (d == d_target) {
+        const REAL x_dim = pt[dim];
+        const auto& knots = knot_vectors_[dim];
+
+        int span = find_knot_interval(x_dim, dim);
+        spans[dim] = span;
+
+        if (dim == d_target) {
             if (use_fast_evaluation_) {
-                evaluate_fast_cubic_basis_derivative(x[d], span, d, derivative.data());
+                evaluate_fast_cubic_basis_derivative(x_dim, span, dim, derivative_values.data());
             }
             else {
-                evaluate_basis_fitpack(x[d], knot_vectors_[d], span, 1, derivative.data());
+                evaluate_basis_fitpack(x_dim, knots, span, 1, derivative_values.data());
             }
         }
         else {
             if (use_fast_evaluation_) {
-                evaluate_fast_cubic_basis(x[d], span, d, basis[d].data());
+                evaluate_fast_cubic_basis(x_dim, span, dim, basis_values[dim].data());
             }
             else {
-                evaluate_basis_fitpack(x[d], knot_vectors_[d], span, 0, basis[d].data());
+                evaluate_basis_fitpack(x_dim, knots, span, 0, basis_values[dim].data());
             }
         }
     }
 
-    // Step 2: Loop over tensor product of local supports
+    // Step 2: Tensor-product sum
     REAL result = 0.0;
 
-    std::vector<int> ctrl_offset(D);
+    std::vector<int> ctrl_offset(num_dims);
+    for (int dim = 0; dim < num_dims; ++dim) {
+        ctrl_offset[dim] = spans[dim] - degree;
+    }
+
     const std::vector<int>& strides = control_point_strides_;
 
-    for (int d = 0; d < D; ++d)
-        ctrl_offset[d] = spans[d] - p;
-
-    for (int flat = 0; flat < std::pow(p + 1, D); ++flat) {
-        int r = flat;
+    for (int i = 0; i < num_combinations_; ++i) {
         REAL weight = 1.0;
         int coeff_idx = 0;
 
-        for (int d = 0; d < D; ++d) {
-            int j = r % (p + 1);
-            r /= (p + 1);
+        for (int dim = 0; dim < num_dims; ++dim) {
+            int basis_idx = multi_indices_flat_[i * num_dims_ + dim];
+            int offset = ctrl_offset[dim] + basis_idx;
+            coeff_idx += offset * strides[dim];
 
-            int i = ctrl_offset[d] + j;
-            coeff_idx += i * strides[d];
-
-            weight *= (d == d_target) ? derivative[j] : basis[d][j];
+            if (dim == d_target) {
+                weight *= derivative_values[basis_idx];
+            }
+            else {
+                weight *= basis_values[dim][basis_idx];
+            }
         }
 
         result += weight * coefficients_[coeff_idx];
@@ -440,48 +441,20 @@ REAL Natural_BSpline_ND::evaluate_derivative(const std::vector<REAL>& x, int d_t
     return result;
 }
 
-void Natural_BSpline_ND::evaluate_batch(const std::vector<std::vector<REAL>>& points, std::vector<REAL>& output) const {
-    int num_points = points.size();
-    output.resize(num_points);
-
-    for (int i = 0; i < num_points; ++i) {
-        output[i] = evaluate(points[i]);
+void Natural_BSpline_ND::evaluate_batch(int n_points, const REAL* input_coords, REAL* output_values) const {
+    for (int i = 0; i < n_points; ++i) {
+        const REAL* pt = input_coords + i * num_dims_;
+        output_values[i] = evaluate(pt);  
     }
 }
 
-void Natural_BSpline_ND::evaluate_batch_derivatives(const std::vector<std::vector<REAL>>& points, int dimension, std::vector<REAL>& output) const {
-    int num_points = points.size();
-    output.resize(num_points);
-
-    for (int i = 0; i < num_points; ++i) {
-        output[i] = evaluate_derivative(points[i], dimension);  // Each element is a vector of size ndim_
+void Natural_BSpline_ND::evaluate_batch_derivatives(int n_points,
+    const REAL* input_coords,
+    int d_target,
+    REAL* output_values) const
+{
+    for (int i = 0; i < n_points; ++i) {
+        const REAL* pt = input_coords + i * num_dims_;
+        output_values[i] = evaluate_derivative(pt, d_target);
     }
 }
-
-//// Flatten (i along axis 0, slice_idx over remaining dimensions) into flat array index for input values
-//int Natural_BSpline_ND::flatten_multi_index(int i, int slice_idx) const {
-//
-//    int flat_idx = i * data_strides_[0];
-//
-//    int remaining = slice_idx;
-//    for (int d = 1; d < num_dims_; ++d) {
-//        int coord = remaining % data_dims_[d];
-//        flat_idx += coord * data_strides_[d];
-//        remaining /= data_dims_[d];
-//    }
-//    return flat_idx;
-//}
-//
-//// Flatten (i along axis 0, slice_idx over remaining dimensions) into flat array index for control points
-//int Natural_BSpline_ND::flatten_multi_index_control(int i, int slice_idx) const {
-//
-//    int flat_idx = i * control_point_strides_[0];
-//
-//    int remaining = slice_idx;
-//    for (int d = 1; d < num_dims_; ++d) {
-//        int coord = remaining % control_point_dims_[d];
-//        flat_idx += coord * control_point_strides_[d];
-//        remaining /= control_point_dims_[d];
-//    }
-//    return flat_idx;
-//}

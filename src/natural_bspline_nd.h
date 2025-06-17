@@ -36,7 +36,7 @@ public:
 
     Natural_BSpline_ND(const std::vector<int>& data_dims,
         const std::vector<REAL>& coefficients,
-        const std::vector<std::array<int, MAX_NDIMS>>& multi_indices);
+        const std::vector<int>& multi_indices);
 
     // Destructor
     ~Natural_BSpline_ND();
@@ -45,21 +45,21 @@ public:
     bool get_fast_evaluation();
     void set_fast_evaluation(bool flag);
 
-    // Evaluate the spline at a given N-D point (x)
-    REAL evaluate(const std::vector<REAL>& x) const;
+    // Evaluate the spline at a given N-D point (pointed to by pt)
+    REAL evaluate(const REAL* pt) const;
 
     // Evaluate partial derivative with respect to axis `dim`
-    REAL evaluate_derivative(const std::vector<REAL>& x, int dim) const;
+    REAL evaluate_derivative(const REAL* pt, int dim) const;
 
-    void evaluate_batch(const std::vector<std::vector<REAL>>& points, std::vector<REAL>& output) const;
+    void evaluate_batch(int n_points, const REAL* input_coords, REAL* output_values) const;
 
-    void evaluate_batch_derivatives(const std::vector<std::vector<REAL>>& points, int dimension, std::vector<REAL>& output) const;
+    void evaluate_batch_derivatives(int n_points, const REAL* input_coords, int d_target, REAL* output_values) const;
 
     // Accessors
     int dimension() const { return num_dims_; }
     const std::vector<int>& shape() const { return data_dims_; }
     const std::vector<REAL>& coefficients() const { return coefficients_; }
-    const std::vector<std::array<int, MAX_NDIMS>>& multi_indices() const { return multi_indices_; }
+    const std::vector<int>& multi_indices() const { return multi_indices_flat_; }
 
 private:
     int num_dims_;
@@ -73,7 +73,8 @@ private:
     std::vector<int> control_point_dims_;
     std::vector<int> control_point_strides_;
 
-    std::vector<std::array<int, MAX_NDIMS>> multi_indices_; // precomputed multi-index combinations
+    int num_combinations_ = 0;
+    std::vector<int> multi_indices_flat_;  // shape = [num_combinations × num_dims_]
 
     std::vector<REAL> coefficients_;               // Flattened tensor of spline coeffs
     std::vector<std::vector<REAL>> knot_vectors_;  // one knot vector per dimension

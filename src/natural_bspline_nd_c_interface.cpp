@@ -21,12 +21,8 @@ int calculate_coefficients_bspline_nd(
     std::copy(coeffs.begin(), coeffs.end(), coefficients_out);
 
     // Copy multi-indices
-    const auto& multi_indices = spline.multi_indices();  
-    for (int i = 0; i < multi_indices.size(); ++i) {
-        for (int d = 0; d < num_dims; ++d) {
-            multi_indices_out[i * num_dims + d] = multi_indices[i][d];
-        }
-    }
+    const std::vector<int>& multi = spline.multi_indices();
+    std::copy(multi.begin(), multi.end(), multi_indices_out);
 
     return 0;
 }
@@ -59,34 +55,21 @@ int calculate_values_bspline_nd(
     for (int i = 0; i < num_dims; ++i)
         shape[i] = data_dims[i];
 
-    // Reconstruct multi_indices
-    int num_basis = static_cast<int>(std::pow(ND::SPLINE_DEGREE + 1, num_dims));
-    std::vector<std::array<int, ND::MAX_NDIMS>> multi_vec(num_basis);
-    for (int i = 0; i < num_basis; ++i)
-        for (int d = 0; d < num_dims; ++d)
-            multi_vec[i][d] = multi_indices[i * num_dims + d];
-
     // Reconstruct coefficients (total = product(data_dims[d] + 2))
     std::size_t total_coeffs = 1;
     for (int i = 0; i < num_dims; ++i)
         total_coeffs *= static_cast<std::size_t>(data_dims[i] + 2);
     std::vector<REAL> coeff_vec(coefficients, coefficients + total_coeffs);
 
+    // Reconstruct multi_indices_flat_
+    int num_combinations = static_cast<int>(std::pow(ND::SPLINE_DEGREE + 1, num_dims));
+    std::vector<int> multi_vec(multi_indices, multi_indices + num_combinations * num_dims);
+
     // Create spline
     ND spline(shape, coeff_vec, multi_vec);
 
-    // Prepare input points
-    std::vector<std::vector<REAL>> points(n_input_coords, std::vector<REAL>(num_dims));
-    for (int i = 0; i < n_input_coords; ++i)
-        for (int d = 0; d < num_dims; ++d)
-            points[i][d] = input_coords[i * num_dims + d];
-
     // Evaluate
-    std::vector<REAL> result;
-    spline.evaluate_batch(points, result);
-
-    // Copy to output
-    std::copy(result.begin(), result.end(), output_values);
+    spline.evaluate_batch(n_input_coords, input_coords, output_values);
 
     return 0;
 }
