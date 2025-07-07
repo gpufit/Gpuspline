@@ -46,6 +46,7 @@ int calculate_values_bspline_nd(
     const int* multi_indices,
     int n_input_coords,
     const REAL* input_coords,
+    int flag_fast_evaluate, 
     REAL* output_values)
 {
     using ND = Natural_BSpline_ND;
@@ -68,6 +69,9 @@ int calculate_values_bspline_nd(
     // Create spline
     ND spline(shape, coeff_vec, multi_vec);
 
+    // Set fast evaluation
+    spline.set_fast_evaluation(flag_fast_evaluate != 0);
+
     // Evaluate
     spline.evaluate_batch(n_input_coords, input_coords, output_values);
 
@@ -84,5 +88,6 @@ int calculate_values_bspline_nd_portable(int argc, void* argv[])
         (int*) argv[3],
         *((int*) argv[4]),
         (REAL*) argv[5],
-        (REAL*) argv[6]);
+        *((int*)argv[6]),
+        (REAL*) argv[7]);
 }

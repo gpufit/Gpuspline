@@ -47,9 +47,23 @@ public:
 
     // Evaluate the spline at a given N-D point (pointed to by pt)
     REAL evaluate(const REAL* pt) const;
+    REAL evaluate_general(const REAL* pt) const;
+    REAL evaluate_1d_fast(const REAL* pt) const;
+    REAL evaluate_2d_fast(const REAL* pt) const;
+    REAL evaluate_3d_fast(const REAL* pt) const;
+    REAL evaluate_4d_fast(const REAL* pt) const;
+    REAL evaluate_5d_fast(const REAL* pt) const;
+    REAL evaluate_6d_fast(const REAL* pt) const;
 
     // Evaluate partial derivative with respect to axis `dim`
     REAL evaluate_derivative(const REAL* pt, int dim) const;
+    REAL evaluate_derivative_general(const REAL* pt, int dim) const;
+    REAL evaluate_derivative_1d_fast(const REAL* pt, int dim) const;
+    REAL evaluate_derivative_2d_fast(const REAL* pt, int dim) const;
+    REAL evaluate_derivative_3d_fast(const REAL* pt, int dim) const;
+    REAL evaluate_derivative_4d_fast(const REAL* pt, int dim) const;
+    REAL evaluate_derivative_5d_fast(const REAL* pt, int dim) const;
+    REAL evaluate_derivative_6d_fast(const REAL* pt, int dim) const;
 
     void evaluate_batch(int n_points, const REAL* input_coords, REAL* output_values) const;
 

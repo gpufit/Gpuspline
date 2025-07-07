@@ -273,9 +273,9 @@ void Natural_BSpline_ND::calculate_coefficients(const REAL* values) {
         int n_data = current_data_shape[axis];
         int n_control = control_point_dims_[axis];
 
-        std::cout << "Starting solve on axis " << axis << ", current shape: ";
-        for (auto v : current_data_shape) std::cout << v << " ";
-        std::cout << "\n";
+        //std::cout << "Starting solve on axis " << axis << ", current shape: ";
+        //for (auto v : current_data_shape) std::cout << v << " ";
+        //std::cout << "\n";
 
         int num_slices = 1;
         for (int d = 0; d < ndim; ++d) {
@@ -297,9 +297,9 @@ void Natural_BSpline_ND::calculate_coefficients(const REAL* values) {
                 slice[i] = temp_values[idx];
             }
 
-            std::cout << "Slice " << slice_idx << " along axis " << axis << ": ";
-            for (auto v : slice) std::cout << v << " ";
-            std::cout << "\n";
+            //std::cout << "Slice " << slice_idx << " along axis " << axis << ": ";
+            //for (auto v : slice) std::cout << v << " ";
+            //std::cout << "\n";
 
             // Solve 1D spline
             spline_1d.calculate_coefficients(slice.data());
@@ -321,7 +321,23 @@ void Natural_BSpline_ND::calculate_coefficients(const REAL* values) {
 }
 
 REAL Natural_BSpline_ND::evaluate(const REAL* pt) const {
+    if (use_fast_evaluation_) {
+        switch (num_dims_) {
+        case 1: return evaluate_1d_fast(pt);
+        case 2: return evaluate_2d_fast(pt);
+        case 3: return evaluate_3d_fast(pt);
+        case 4: return evaluate_4d_fast(pt);
+        case 5: return evaluate_5d_fast(pt);
+        case 6: return evaluate_6d_fast(pt);
+        default: return evaluate_general(pt);  // fallback for D > 5
+        }
+    }
+    else {
+        return evaluate_general(pt);  // always use slow path
+    }
+}
 
+REAL Natural_BSpline_ND::evaluate_general(const REAL* pt) const {
     constexpr int degree = SPLINE_DEGREE;
     const int num_dims = num_dims_;
 
@@ -372,8 +388,242 @@ REAL Natural_BSpline_ND::evaluate(const REAL* pt) const {
     return result;
 }
 
-REAL Natural_BSpline_ND::evaluate_derivative(const REAL* pt, int d_target) const {
+REAL Natural_BSpline_ND::evaluate_1d_fast(const REAL* pt) const {
+    constexpr int degree = SPLINE_DEGREE;
+    constexpr int span_size = degree + 1;
 
+    std::array<REAL, span_size> B;
+    int span = find_knot_interval(pt[0], 0);
+    evaluate_fast_cubic_basis(pt[0], span, 0, B.data());
+
+    int offset = span - degree;
+    int stride = control_point_strides_[0];
+
+    REAL result = 0.0;
+    for (int i = 0; i < span_size; ++i) {
+        int idx = (offset + i) * stride;
+        result += B[i] * coefficients_[idx];
+    }
+
+    return result;
+}
+
+REAL Natural_BSpline_ND::evaluate_2d_fast(const REAL* pt) const {
+    constexpr int degree = SPLINE_DEGREE;
+    constexpr int span_size = degree + 1;
+
+    std::array<std::array<REAL, span_size>, 2> B;
+    std::array<int, 2> spans;
+
+    // Step 1: compute spans and basis values
+    for (int d = 0; d < 2; ++d) {
+        int span = find_knot_interval(pt[d], d);
+        spans[d] = span;
+        evaluate_fast_cubic_basis(pt[d], span, d, B[d].data());
+    }
+
+    int o0 = spans[0] - degree;
+    int o1 = spans[1] - degree;
+
+    const int s0 = control_point_strides_[0];
+    const int s1 = control_point_strides_[1];
+
+    // Step 2: tensor-product sum
+    REAL result = 0.0;
+
+    for (int i = 0; i < span_size; ++i)
+        for (int j = 0; j < span_size; ++j) {
+            REAL w = B[0][i] * B[1][j];
+            int idx = (o0 + i) * s0 + (o1 + j) * s1;
+            result += w * coefficients_[idx];
+        }
+
+    return result;
+}
+
+REAL Natural_BSpline_ND::evaluate_3d_fast(const REAL* pt) const {
+    constexpr int degree = SPLINE_DEGREE;
+    constexpr int span_size = degree + 1;
+
+    std::array<std::array<REAL, span_size>, 3> B;
+    std::array<int, 3> spans;
+
+    for (int d = 0; d < 3; ++d) {
+        int span = find_knot_interval(pt[d], d);
+        spans[d] = span;
+        evaluate_fast_cubic_basis(pt[d], span, d, B[d].data());
+    }
+
+    int o0 = spans[0] - degree;
+    int o1 = spans[1] - degree;
+    int o2 = spans[2] - degree;
+
+    const int s0 = control_point_strides_[0];
+    const int s1 = control_point_strides_[1];
+    const int s2 = control_point_strides_[2];
+
+    REAL result = 0.0;
+
+    for (int i = 0; i < span_size; ++i)
+        for (int j = 0; j < span_size; ++j)
+            for (int k = 0; k < span_size; ++k) {
+                REAL w = B[0][i] * B[1][j] * B[2][k];
+                int idx = (o0 + i) * s0 + (o1 + j) * s1 + (o2 + k) * s2;
+                result += w * coefficients_[idx];
+            }
+
+    return result;
+}
+
+REAL Natural_BSpline_ND::evaluate_4d_fast(const REAL* pt) const {
+    constexpr int degree = SPLINE_DEGREE;
+    constexpr int span_size = degree + 1;
+
+    std::array<std::array<REAL, span_size>, 4> B;
+    std::array<int, 4> spans;
+
+    // Step 1: compute spans and basis values
+    for (int d = 0; d < 4; ++d) {
+        int span = find_knot_interval(pt[d], d);
+        spans[d] = span;
+        evaluate_fast_cubic_basis(pt[d], span, d, B[d].data());
+    }
+
+    // Step 2: offset and strides
+    int o0 = spans[0] - degree;
+    int o1 = spans[1] - degree;
+    int o2 = spans[2] - degree;
+    int o3 = spans[3] - degree;
+
+    const int s0 = control_point_strides_[0];
+    const int s1 = control_point_strides_[1];
+    const int s2 = control_point_strides_[2];
+    const int s3 = control_point_strides_[3];
+
+    // Step 3: tensor-product sum
+    REAL result = 0.0;
+
+    for (int i = 0; i < span_size; ++i)
+        for (int j = 0; j < span_size; ++j)
+            for (int k = 0; k < span_size; ++k)
+                for (int l = 0; l < span_size; ++l) {
+                    REAL w = B[0][i] * B[1][j] * B[2][k] * B[3][l];
+                    int idx = (o0 + i) * s0 + (o1 + j) * s1 + (o2 + k) * s2 + (o3 + l) * s3;
+                    result += w * coefficients_[idx];
+                }
+
+    return result;
+}
+
+REAL Natural_BSpline_ND::evaluate_5d_fast(const REAL* pt) const {
+    constexpr int degree = SPLINE_DEGREE;
+    constexpr int span_size = degree + 1;
+
+    std::array<std::array<REAL, span_size>, 5> B;
+    std::array<int, 5> spans;
+
+    // Step 1: compute spans and basis values
+    for (int d = 0; d < 5; ++d) {
+        int span = find_knot_interval(pt[d], d);
+        spans[d] = span;
+        evaluate_fast_cubic_basis(pt[d], span, d, B[d].data());
+    }
+
+    // Step 2: offset and strides
+    int o0 = spans[0] - degree;
+    int o1 = spans[1] - degree;
+    int o2 = spans[2] - degree;
+    int o3 = spans[3] - degree;
+    int o4 = spans[4] - degree;
+
+    const int s0 = control_point_strides_[0];
+    const int s1 = control_point_strides_[1];
+    const int s2 = control_point_strides_[2];
+    const int s3 = control_point_strides_[3];
+    const int s4 = control_point_strides_[4];
+
+    // Step 3: tensor-product sum
+    REAL result = 0.0;
+
+    for (int i = 0; i < span_size; ++i)
+        for (int j = 0; j < span_size; ++j)
+            for (int k = 0; k < span_size; ++k)
+                for (int l = 0; l < span_size; ++l)
+                    for (int m = 0; m < span_size; ++m) {
+                        REAL w = B[0][i] * B[1][j] * B[2][k] * B[3][l] * B[4][m];
+                        int idx = (o0 + i) * s0 + (o1 + j) * s1 + (o2 + k) * s2 +
+                            (o3 + l) * s3 + (o4 + m) * s4;
+                        result += w * coefficients_[idx];
+                    }
+
+    return result;
+}
+
+REAL Natural_BSpline_ND::evaluate_6d_fast(const REAL* pt) const {
+    constexpr int degree = SPLINE_DEGREE;
+    constexpr int span_size = degree + 1;
+
+    std::array<std::array<REAL, span_size>, 6> B;
+    std::array<int, 6> spans;
+
+    // Step 1: compute spans and basis values
+    for (int d = 0; d < 6; ++d) {
+        int span = find_knot_interval(pt[d], d);
+        spans[d] = span;
+        evaluate_fast_cubic_basis(pt[d], span, d, B[d].data());
+    }
+
+    // Step 2: offsets and strides
+    int o0 = spans[0] - degree;
+    int o1 = spans[1] - degree;
+    int o2 = spans[2] - degree;
+    int o3 = spans[3] - degree;
+    int o4 = spans[4] - degree;
+    int o5 = spans[5] - degree;
+
+    const int s0 = control_point_strides_[0];
+    const int s1 = control_point_strides_[1];
+    const int s2 = control_point_strides_[2];
+    const int s3 = control_point_strides_[3];
+    const int s4 = control_point_strides_[4];
+    const int s5 = control_point_strides_[5];
+
+    // Step 3: tensor-product sum
+    REAL result = 0.0;
+
+    for (int i = 0; i < span_size; ++i)
+        for (int j = 0; j < span_size; ++j)
+            for (int k = 0; k < span_size; ++k)
+                for (int l = 0; l < span_size; ++l)
+                    for (int m = 0; m < span_size; ++m)
+                        for (int n = 0; n < span_size; ++n) {
+                            REAL w = B[0][i] * B[1][j] * B[2][k] * B[3][l] * B[4][m] * B[5][n];
+                            int idx = (o0 + i) * s0 + (o1 + j) * s1 + (o2 + k) * s2 +
+                                (o3 + l) * s3 + (o4 + m) * s4 + (o5 + n) * s5;
+                            result += w * coefficients_[idx];
+                        }
+
+    return result;
+}
+
+REAL Natural_BSpline_ND::evaluate_derivative(const REAL* pt, int d_target) const {
+    if (use_fast_evaluation_) {
+        switch (num_dims_) {
+        case 1: return evaluate_derivative_1d_fast(pt, d_target);
+        case 2: return evaluate_derivative_2d_fast(pt, d_target);
+        case 3: return evaluate_derivative_3d_fast(pt, d_target);
+        case 4: return evaluate_derivative_4d_fast(pt, d_target);
+        case 5: return evaluate_derivative_5d_fast(pt, d_target);
+        case 6: return evaluate_derivative_6d_fast(pt, d_target);
+        default: return evaluate_derivative_general(pt, d_target);  // fallback
+        }
+    }
+    else {
+        return evaluate_derivative_general(pt, d_target);
+    }
+}
+
+REAL Natural_BSpline_ND::evaluate_derivative_general(const REAL* pt, int d_target) const {
     constexpr int degree = SPLINE_DEGREE;
     const int num_dims = num_dims_;
 
@@ -437,6 +687,292 @@ REAL Natural_BSpline_ND::evaluate_derivative(const REAL* pt, int d_target) const
 
         result += weight * coefficients_[coeff_idx];
     }
+
+    return result;
+}
+
+REAL Natural_BSpline_ND::evaluate_derivative_1d_fast(const REAL* pt, int d_target) const {
+    constexpr int degree = SPLINE_DEGREE;
+    constexpr int span_size = degree + 1;
+
+    std::array<REAL, span_size> dB;
+    int span = find_knot_interval(pt[0], 0);
+    evaluate_fast_cubic_basis_derivative(pt[0], span, 0, dB.data());
+
+    int offset = span - degree;
+    int stride = control_point_strides_[0];
+
+    REAL result = 0.0;
+    for (int i = 0; i < span_size; ++i) {
+        int idx = (offset + i) * stride;
+        result += dB[i] * coefficients_[idx];
+    }
+
+    return result;
+}
+
+REAL Natural_BSpline_ND::evaluate_derivative_2d_fast(const REAL* pt, int d_target) const {
+    constexpr int degree = SPLINE_DEGREE;
+    constexpr int span_size = degree + 1;
+
+    std::array<std::array<REAL, span_size>, 2> B;
+    std::array<REAL, span_size> dB;
+    std::array<int, 2> spans;
+
+    // Step 1: compute spans and basis values
+    for (int d = 0; d < 2; ++d) {
+        int span = find_knot_interval(pt[d], d);
+        spans[d] = span;
+
+        if (d == d_target) {
+            evaluate_fast_cubic_basis_derivative(pt[d], span, d, dB.data());
+        }
+        else {
+            evaluate_fast_cubic_basis(pt[d], span, d, B[d].data());
+        }
+    }
+
+    // Step 2: offsets and strides
+    int o0 = spans[0] - degree;
+    int o1 = spans[1] - degree;
+
+    const int s0 = control_point_strides_[0];
+    const int s1 = control_point_strides_[1];
+
+    // Step 3: tensor-product sum
+    REAL result = 0.0;
+
+    for (int i = 0; i < span_size; ++i)
+        for (int j = 0; j < span_size; ++j) {
+            REAL w = 1.0;
+            w *= (d_target == 0) ? dB[i] : B[0][i];
+            w *= (d_target == 1) ? dB[j] : B[1][j];
+
+            int idx = (o0 + i) * s0 + (o1 + j) * s1;
+            result += w * coefficients_[idx];
+        }
+
+    return result;
+}
+
+REAL Natural_BSpline_ND::evaluate_derivative_3d_fast(const REAL* pt, int d_target) const {
+    constexpr int degree = SPLINE_DEGREE;
+    constexpr int span_size = degree + 1;
+
+    std::array<std::array<REAL, span_size>, 3> B;
+    std::array<REAL, span_size> dB;
+    std::array<int, 3> spans;
+
+    // Step 1: compute spans and basis values
+    for (int d = 0; d < 3; ++d) {
+        int span = find_knot_interval(pt[d], d);
+        spans[d] = span;
+
+        if (d == d_target) {
+            evaluate_fast_cubic_basis_derivative(pt[d], span, d, dB.data());
+        }
+        else {
+            evaluate_fast_cubic_basis(pt[d], span, d, B[d].data());
+        }
+    }
+
+    // Step 2: offsets and strides
+    int o0 = spans[0] - degree;
+    int o1 = spans[1] - degree;
+    int o2 = spans[2] - degree;
+
+    const int s0 = control_point_strides_[0];
+    const int s1 = control_point_strides_[1];
+    const int s2 = control_point_strides_[2];
+
+    // Step 3: tensor-product sum
+    REAL result = 0.0;
+
+    for (int i = 0; i < span_size; ++i)
+        for (int j = 0; j < span_size; ++j)
+            for (int k = 0; k < span_size; ++k) {
+                REAL w = 1.0;
+                w *= (d_target == 0) ? dB[i] : B[0][i];
+                w *= (d_target == 1) ? dB[j] : B[1][j];
+                w *= (d_target == 2) ? dB[k] : B[2][k];
+
+                int idx = (o0 + i) * s0 + (o1 + j) * s1 + (o2 + k) * s2;
+                result += w * coefficients_[idx];
+            }
+
+    return result;
+}
+
+REAL Natural_BSpline_ND::evaluate_derivative_4d_fast(const REAL* pt, int d_target) const {
+    constexpr int degree = SPLINE_DEGREE;
+    constexpr int span_size = degree + 1;
+
+    std::array<std::array<REAL, span_size>, 4> B;
+    std::array<REAL, span_size> dB;
+    std::array<int, 4> spans;
+
+    // Step 1: compute spans and basis values
+    for (int d = 0; d < 4; ++d) {
+        int span = find_knot_interval(pt[d], d);
+        spans[d] = span;
+
+        if (d == d_target) {
+            evaluate_fast_cubic_basis_derivative(pt[d], span, d, dB.data());
+        }
+        else {
+            evaluate_fast_cubic_basis(pt[d], span, d, B[d].data());
+        }
+    }
+
+    // Step 2: offsets and strides
+    int o0 = spans[0] - degree;
+    int o1 = spans[1] - degree;
+    int o2 = spans[2] - degree;
+    int o3 = spans[3] - degree;
+
+    const int s0 = control_point_strides_[0];
+    const int s1 = control_point_strides_[1];
+    const int s2 = control_point_strides_[2];
+    const int s3 = control_point_strides_[3];
+
+    // Step 3: tensor-product sum
+    REAL result = 0.0;
+
+    for (int i = 0; i < span_size; ++i)
+        for (int j = 0; j < span_size; ++j)
+            for (int k = 0; k < span_size; ++k)
+                for (int l = 0; l < span_size; ++l) {
+                    REAL w = 1.0;
+                    w *= (d_target == 0) ? dB[i] : B[0][i];
+                    w *= (d_target == 1) ? dB[j] : B[1][j];
+                    w *= (d_target == 2) ? dB[k] : B[2][k];
+                    w *= (d_target == 3) ? dB[l] : B[3][l];
+
+                    int idx = (o0 + i) * s0 + (o1 + j) * s1 +
+                        (o2 + k) * s2 + (o3 + l) * s3;
+
+                    result += w * coefficients_[idx];
+                }
+
+    return result;
+}
+
+REAL Natural_BSpline_ND::evaluate_derivative_5d_fast(const REAL* pt, int d_target) const {
+    constexpr int degree = SPLINE_DEGREE;
+    constexpr int span_size = degree + 1;
+
+    std::array<std::array<REAL, span_size>, 5> B;
+    std::array<REAL, span_size> dB;
+    std::array<int, 5> spans;
+
+    // Step 1: compute spans and basis values
+    for (int d = 0; d < 5; ++d) {
+        int span = find_knot_interval(pt[d], d);
+        spans[d] = span;
+
+        if (d == d_target) {
+            evaluate_fast_cubic_basis_derivative(pt[d], span, d, dB.data());
+        }
+        else {
+            evaluate_fast_cubic_basis(pt[d], span, d, B[d].data());
+        }
+    }
+
+    // Step 2: offsets and strides
+    int o0 = spans[0] - degree;
+    int o1 = spans[1] - degree;
+    int o2 = spans[2] - degree;
+    int o3 = spans[3] - degree;
+    int o4 = spans[4] - degree;
+
+    const int s0 = control_point_strides_[0];
+    const int s1 = control_point_strides_[1];
+    const int s2 = control_point_strides_[2];
+    const int s3 = control_point_strides_[3];
+    const int s4 = control_point_strides_[4];
+
+    // Step 3: tensor-product sum
+    REAL result = 0.0;
+
+    for (int i = 0; i < span_size; ++i)
+        for (int j = 0; j < span_size; ++j)
+            for (int k = 0; k < span_size; ++k)
+                for (int l = 0; l < span_size; ++l)
+                    for (int m = 0; m < span_size; ++m) {
+                        REAL w = 1.0;
+                        w *= (d_target == 0) ? dB[i] : B[0][i];
+                        w *= (d_target == 1) ? dB[j] : B[1][j];
+                        w *= (d_target == 2) ? dB[k] : B[2][k];
+                        w *= (d_target == 3) ? dB[l] : B[3][l];
+                        w *= (d_target == 4) ? dB[m] : B[4][m];
+
+                        int idx = (o0 + i) * s0 + (o1 + j) * s1 + (o2 + k) * s2 +
+                            (o3 + l) * s3 + (o4 + m) * s4;
+
+                        result += w * coefficients_[idx];
+                    }
+
+    return result;
+}
+
+REAL Natural_BSpline_ND::evaluate_derivative_6d_fast(const REAL* pt, int d_target) const {
+    constexpr int degree = SPLINE_DEGREE;
+    constexpr int span_size = degree + 1;
+
+    std::array<std::array<REAL, span_size>, 6> B;
+    std::array<REAL, span_size> dB;
+    std::array<int, 6> spans;
+
+    // Step 1: compute spans and basis values
+    for (int d = 0; d < 6; ++d) {
+        int span = find_knot_interval(pt[d], d);
+        spans[d] = span;
+
+        if (d == d_target) {
+            evaluate_fast_cubic_basis_derivative(pt[d], span, d, dB.data());
+        }
+        else {
+            evaluate_fast_cubic_basis(pt[d], span, d, B[d].data());
+        }
+    }
+
+    // Step 2: offsets and strides
+    int o0 = spans[0] - degree;
+    int o1 = spans[1] - degree;
+    int o2 = spans[2] - degree;
+    int o3 = spans[3] - degree;
+    int o4 = spans[4] - degree;
+    int o5 = spans[5] - degree;
+
+    const int s0 = control_point_strides_[0];
+    const int s1 = control_point_strides_[1];
+    const int s2 = control_point_strides_[2];
+    const int s3 = control_point_strides_[3];
+    const int s4 = control_point_strides_[4];
+    const int s5 = control_point_strides_[5];
+
+    // Step 3: tensor-product sum with substitution for derivative dimension
+    REAL result = 0.0;
+
+    for (int i = 0; i < span_size; ++i)
+        for (int j = 0; j < span_size; ++j)
+            for (int k = 0; k < span_size; ++k)
+                for (int l = 0; l < span_size; ++l)
+                    for (int m = 0; m < span_size; ++m)
+                        for (int n = 0; n < span_size; ++n) {
+                            REAL w = 1.0;
+                            w *= (d_target == 0) ? dB[i] : B[0][i];
+                            w *= (d_target == 1) ? dB[j] : B[1][j];
+                            w *= (d_target == 2) ? dB[k] : B[2][k];
+                            w *= (d_target == 3) ? dB[l] : B[3][l];
+                            w *= (d_target == 4) ? dB[m] : B[4][m];
+                            w *= (d_target == 5) ? dB[n] : B[5][n];
+
+                            int idx = (o0 + i) * s0 + (o1 + j) * s1 + (o2 + k) * s2 +
+                                (o3 + l) * s3 + (o4 + m) * s4 + (o5 + n) * s5;
+
+                            result += w * coefficients_[idx];
+                        }
 
     return result;
 }

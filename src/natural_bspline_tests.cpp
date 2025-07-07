@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
+#include <chrono>
 #include "natural_bspline_1d.h"
 #include "natural_bspline_nd.h"
 
@@ -186,6 +187,50 @@ void test_reconstruction_from_coefficients() {
 }
 
 
+void benchmark_nd_spline_eval(int n_dims, int n_points_per_dim) {
+    std::cout << "\n=== Benchmark: ND Spline Evaluation ("
+        << n_dims << "D, " << n_points_per_dim << "^" << n_dims << " points) ===\n";
+
+    using clock = std::chrono::high_resolution_clock;
+
+    // Build grid shape: e.g., [32,32,32,...]
+    std::vector<int> shape(n_dims, n_points_per_dim);
+    int total_points = static_cast<int>(std::pow(n_points_per_dim, n_dims));
+
+    // Generate input data: f(x) = sum(x)
+    std::vector<REAL> data(total_points);
+    for (int i = 0; i < total_points; ++i)
+        data[i] = static_cast<REAL>(i % 100);  // cheap placeholder
+
+    // Construct spline
+    Natural_BSpline_ND spline(shape, data.data());
+
+    // Build evaluation points: mid-grid
+    std::vector<REAL> input_coords(total_points * n_dims);
+    for (int i = 0; i < total_points; ++i) {
+        for (int d = 0; d < n_dims; ++d)
+            input_coords[i * n_dims + d] = static_cast<REAL>((i % shape[d]) + 0.5);
+    }
+
+    std::vector<REAL> output(total_points);
+
+    // Slow mode
+    spline.set_fast_evaluation(false);
+    auto t0 = clock::now();
+    spline.evaluate_batch(total_points, input_coords.data(), output.data());
+    auto t1 = clock::now();
+    std::cout << "Slow evaluation time: "
+        << std::chrono::duration<double, std::milli>(t1 - t0).count() << " ms\n";
+
+    // Fast mode
+    spline.set_fast_evaluation(true);
+    auto t2 = clock::now();
+    spline.evaluate_batch(total_points, input_coords.data(), output.data());
+    auto t3 = clock::now();
+    std::cout << "Fast evaluation time: "
+        << std::chrono::duration<double, std::milli>(t3 - t2).count() << " ms\n";
+}
+
 
 // === Main ===
 int main() {
@@ -224,6 +269,8 @@ int main() {
 
     test_reconstruction_from_coefficients();
     run_rectangular_2d_sanity_test();
+    benchmark_nd_spline_eval(3, 128);  // adjust D and resolution as needed
+
 
     return 0;
 }
