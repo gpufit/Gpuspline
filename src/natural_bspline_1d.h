@@ -30,6 +30,7 @@ public:
     // Constructors
     Natural_BSpline_1D(int num_data_points);
     Natural_BSpline_1D(int num_data_points, const REAL* values);
+    Natural_BSpline_1D(int num_data_points, int num_coefficients, const REAL* coefficients);
 
     // Destructor
     ~Natural_BSpline_1D();

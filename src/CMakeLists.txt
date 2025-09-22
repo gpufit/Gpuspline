@@ -135,6 +135,7 @@ set( splinesSources
 	bspline_5d.cpp
 	natural_bspline_1d.cpp
 	natural_bspline_nd.cpp
+	natural_bspline_1d_c_interface.cpp
 	natural_bspline_nd_c_interface.cpp
     lsq_bspline_1d.cpp
     equation_system.cpp

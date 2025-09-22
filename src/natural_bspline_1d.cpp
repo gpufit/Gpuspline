@@ -39,6 +39,28 @@ Natural_BSpline_1D::Natural_BSpline_1D(int num_data_points, const REAL* values)
     calculate_coefficients(values);
 }
 
+Natural_BSpline_1D::Natural_BSpline_1D(int num_data_points, int num_coefficients, const REAL* coefficients)
+    : num_data_points_(num_data_points),
+    num_control_points_(num_data_points + 2),
+    num_knots_(num_control_points_ + SPLINE_DEGREE + 1) {
+
+    coefficients_ = new REAL[num_control_points_]{};
+    knots_ = new REAL[num_knots_]{};
+
+    use_fast_evaluation_ = true;
+
+    knots_ready_ = false;
+    coefficients_ready_ = false;
+
+    init_knot_vector();          // Creates 3+N+3 = N+6 knots for a cubic spline
+
+    for (int i = 0; i < num_control_points_; i++) {
+        coefficients_[i] = coefficients[i];
+    }
+
+    coefficients_ready_ = true;
+}
+
 Natural_BSpline_1D::~Natural_BSpline_1D() {
     delete[] coefficients_;
     delete[] knots_;
