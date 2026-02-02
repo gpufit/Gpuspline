@@ -36,7 +36,13 @@ EXPORTS
     convert_csaps_coefficients_4d_portable @34
     convert_csaps_coefficients_5d_portable @35
     regrid_3d_volumes_portable @36
-    calculate_coefficients_natural_bspline_1d_portable @37
-    calculate_values_natural_bspline_1d_portable @38
-    calculate_coefficients_bspline_nd_portable @39
-    calculate_values_bspline_nd_portable @40
+    calculate_coefficients_natural_bspline_1d @37
+    calculate_coefficients_natural_bspline_1d_portable @38
+    calculate_values_natural_bspline_1d @39
+    calculate_values_natural_bspline_1d_portable @40
+    calculate_coefficients_natural_bspline_nd @41
+    calculate_coefficients_natural_bspline_nd_portable @42
+    calculate_values_natural_bspline_nd @43
+    calculate_values_natural_bspline_nd_portable @44
+    calculate_sizes_natural_bspline_nd @45
+    calculate_sizes_natural_bspline_nd_portable @46

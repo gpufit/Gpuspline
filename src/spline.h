@@ -247,6 +247,43 @@ extern "C" {
         REAL * x_values,
         REAL * bspline_values);
 
+    VISIBLE int calculate_coefficients_natural_bspline_1d(
+        int num_data_points,
+        REAL* data,
+        REAL* coefficients_out);
+
+    VISIBLE int calculate_values_natural_bspline_1d(
+        int num_data_points,
+        const REAL* coefficients,
+        int n_input_coords,
+        const REAL* input_coords,
+        int flag_fast_evaluate,
+        REAL* output_values);
+
+    VISIBLE int calculate_coefficients_natural_bspline_nd(
+        int num_dims,
+        const int* dims,
+        REAL* data,
+        REAL* knots_out,
+        REAL* coeff_strides_out,
+        REAL* coefficients_out);
+
+    VISIBLE int calculate_values_natural_bspline_nd(
+        int num_dims,
+        const int* data_dims,
+        const REAL* coefficients,
+        int n_input_coords,
+        const REAL* input_coords,
+        int flag_fast_evaluate,
+        REAL* output_values);
+
+    VISIBLE int calculate_sizes_natural_bspline_nd(
+        int num_dims,
+        const int* dims,
+        size_t* knots_len_out,
+        size_t* coeff_strides_len_out,
+        size_t* coefficients_len_out);
+
     VISIBLE int calculate_coefficients_1d_portable(int argc, void *argv[]);
 
     VISIBLE int calculate_coefficients_2d_portable(int argc, void *argv[]);
@@ -290,6 +327,16 @@ extern "C" {
     VISIBLE int regrid_3d_volumes_portable(int argc, void *argv[]);
 
     VISIBLE int bspline_calculate_values_1d_portable(int argc, void *argv[]);
+
+    VISIBLE int calculate_coefficients_natural_bspline_1d_portable(int argc, void* argv[]);
+
+    VISIBLE int calculate_values_natural_bspline_1d_portable(int argc, void* argv[]);
+
+    VISIBLE int calculate_coefficients_natural_bspline_nd_portable(int argc, void* argv[]);
+
+    VISIBLE int calculate_values_natural_bspline_nd_portable(int argc, void* argv[]);
+
+    VISIBLE int calculate_sizes_natural_bspline_nd_portable(int argc, void* argv[]);
 
 #ifdef __cplusplus
 }

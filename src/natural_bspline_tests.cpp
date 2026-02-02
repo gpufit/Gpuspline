@@ -167,10 +167,9 @@ void test_reconstruction_from_coefficients() {
     Natural_BSpline_ND spline_orig(shape, data.data());
 
     const std::vector<REAL>& coeffs = spline_orig.coefficients();
-    const auto& multi = spline_orig.multi_indices();
 
     // Reconstructed spline
-    Natural_BSpline_ND spline_recon(shape, coeffs, multi);
+    Natural_BSpline_ND spline_recon(shape, coeffs);
 
     // Compare evaluation at several points
     for (REAL y = 0.0; y <= NY_2D - 1; y += 0.5f) {

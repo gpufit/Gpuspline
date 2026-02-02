@@ -6,7 +6,9 @@
 #include "bspline_fast_cubic_basis_evaluate.h"
 
 Natural_BSpline_ND::Natural_BSpline_ND(const std::vector<int>& data_dims, const REAL* data_values)
-    : num_dims_(static_cast<int>(data_dims.size())), data_dims_(data_dims) {
+    : num_dims_(static_cast<int>(data_dims.size())), 
+    data_dims_(data_dims) 
+{
 
     assert(num_dims_ >= 1);
     assert(data_values != nullptr);
@@ -35,35 +37,33 @@ Natural_BSpline_ND::Natural_BSpline_ND(const std::vector<int>& data_dims, const 
 }
 
 Natural_BSpline_ND::Natural_BSpline_ND(const std::vector<int>& data_dims,
-                                       const std::vector<REAL>& coefficients,
-                                       const std::vector<int>& multi_indices)
-    : data_dims_(data_dims),
-    num_dims_(static_cast<int>(data_dims.size())),
-    multi_indices_flat_(multi_indices),
+                                       const std::vector<REAL>& coefficients)
+    : num_dims_(static_cast<int>(data_dims.size())),
+    data_dims_(data_dims),
     coefficients_(coefficients)
 {
-    constexpr int degree = SPLINE_DEGREE;
+    assert(num_dims_ >= 1);
 
     use_fast_evaluation_ = false;
 
-    // Reconstruct control_point_dims_ from total coefficient count
-    control_point_dims_ = data_dims_;  // assume initially same size
+    control_point_dims_.resize(num_dims_);
     int total_expected = 1;
-    for (int d = 0; d < num_dims_; ++d) {
-        int n_ctrl = data_dims_[d] + degree - 1; // natural cubic spline control points
-        control_point_dims_[d] = n_ctrl;
+    for (int i = 0; i < num_dims_; ++i) {
+        int n_ctrl = data_dims[i] + 2;          // natural cubic spline # control points
+        control_point_dims_[i] = n_ctrl;
         total_expected *= n_ctrl;
     }
 
     assert(static_cast<int>(coefficients.size()) == total_expected);
-    assert(static_cast<int>(multi_indices_flat_.size()) % num_dims_ == 0);
 
     total_data_points_ = std::accumulate(data_dims_.begin(), data_dims_.end(), 1, std::multiplies<int>());
     total_control_points_ = std::accumulate(control_point_dims_.begin(), control_point_dims_.end(), 1, std::multiplies<int>());
-    num_combinations_ = static_cast<int>(multi_indices_flat_.size()) / num_dims_;
 
     // Initialize stride vectors
     init_stride_vectors();
+
+    // Initialize multi-indices
+    build_multi_indices();
 
     // Initialise knot vectors for each dimension
     init_knot_vectors();

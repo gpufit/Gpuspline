@@ -35,8 +35,7 @@ public:
     Natural_BSpline_ND(const std::vector<int>& grid_shape, const REAL* values);
 
     Natural_BSpline_ND(const std::vector<int>& data_dims,
-        const std::vector<REAL>& coefficients,
-        const std::vector<int>& multi_indices);
+        const std::vector<REAL>& coefficients);
 
     // Destructor
     ~Natural_BSpline_ND();
@@ -74,6 +73,8 @@ public:
     const std::vector<int>& shape() const { return data_dims_; }
     const std::vector<REAL>& coefficients() const { return coefficients_; }
     const std::vector<int>& multi_indices() const { return multi_indices_flat_; }
+    const std::vector<std::vector<REAL>>& knot_vectors() const { return knot_vectors_; }
+    const std::vector<int>& control_point_strides() const { return control_point_strides_; }
 
 private:
     int num_dims_;

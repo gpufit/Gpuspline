@@ -1,10 +1,10 @@
+#include "spline.h"
 #include "natural_bspline_1d.h"
 
 int calculate_coefficients_natural_bspline_1d(
     int num_data_points,
     REAL* data,
-    REAL* coefficients_out
-)
+    REAL* coefficients_out)
 {
     int num_control_points = num_data_points + 2;
 
