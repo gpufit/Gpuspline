@@ -64,6 +64,14 @@ public:
     REAL evaluate_derivative_5d_fast(const REAL* pt, int dim) const;
     REAL evaluate_derivative_6d_fast(const REAL* pt, int dim) const;
 
+    // Evaluate on a regular output grid without passing a coords matrix.
+    // Output ordering is x-fastest (dim 0 fastest), total length = product(output_grid_dims[d]).
+    void evaluate_regular_grid(
+        const int* output_grid_dims,
+        const REAL* output_origin,
+        const REAL* output_step_size,
+        REAL* output_values) const;
+
     void evaluate_batch(int n_points, const REAL* input_coords, REAL* output_values) const;
 
     void evaluate_batch_derivatives(int n_points, const REAL* input_coords, int d_target, REAL* output_values) const;
@@ -108,6 +116,7 @@ private:
 
     // Flatten multi-index (i0, i1, ..., id-1) to linear index
     void build_multi_indices();
+
 };
 
 #endif

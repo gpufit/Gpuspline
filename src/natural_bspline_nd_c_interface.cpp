@@ -62,25 +62,25 @@ int calculate_coefficients_natural_bspline_nd_portable(int argc, void* argv[])
 
 int calculate_values_natural_bspline_nd(
     int num_dims,
-    const int* data_dims,
-    const REAL* coefficients,
+    const int* spline_domain_dims,
+    const REAL* spline_coefficients,
     int n_input_coords,
-    const REAL* input_coords,
+    const REAL* input_coords,       // coords array dimensions: [num_dims, n_input_coords]
     int flag_fast_evaluate, 
     REAL* output_values)
 {
     using ND = Natural_BSpline_ND;
 
-    // Convert data_dims to vector<int>
+    // Convert spline_domain_dims to vector<int>
     std::vector<int> shape(num_dims);
     for (int i = 0; i < num_dims; ++i)
-        shape[i] = data_dims[i];
+        shape[i] = spline_domain_dims[i];
 
-    // Reconstruct coefficients (total = product(data_dims[d] + 2))
+    // Reconstruct spline_coefficients (total = product(spline_domain_dims[d] + 2))
     std::size_t total_coeffs = 1;
     for (int i = 0; i < num_dims; ++i)
-        total_coeffs *= static_cast<std::size_t>(data_dims[i] + 2);
-    std::vector<REAL> coeff_vec(coefficients, coefficients + total_coeffs);
+        total_coeffs *= static_cast<std::size_t>(spline_domain_dims[i] + 2);
+    std::vector<REAL> coeff_vec(spline_coefficients, spline_coefficients + total_coeffs);
 
     // Create spline
     ND spline(shape, coeff_vec);
@@ -105,6 +105,59 @@ int calculate_values_natural_bspline_nd_portable(int argc, void* argv[])
         (REAL*) argv[4],
         *((int*)argv[5]),
         (REAL*) argv[6]);
+}
+
+
+int calculate_values_regular_grid_natural_bspline_nd(
+    int num_dims,
+    const int* spline_domain_dims,      // defines coefficient shape: (dims[d] + 2)
+    const REAL* spline_coefficients,
+    const int* output_grid_dims,        // number of output samples per dim
+    const REAL* output_origin,          // length num_dims
+    const REAL* output_step_size,       // length num_dims
+    int flag_fast_evaluate,
+    REAL* output_values)                // length = product(output_grid_dims[d]), x fastest
+{
+    using ND = Natural_BSpline_ND;
+
+    if (num_dims <= 0 ||
+        !spline_domain_dims || !spline_coefficients ||
+        !output_grid_dims || !output_origin || !output_step_size ||
+        !output_values)
+        return 1;
+
+    // spline shape
+    std::vector<int> shape(num_dims);
+    for (int d = 0; d < num_dims; ++d)
+        shape[d] = spline_domain_dims[d];
+
+    // coeff count = product(spline_domain_dims[d] + 2)
+    std::size_t total_coeffs = 1;
+    for (int d = 0; d < num_dims; ++d)
+        total_coeffs *= static_cast<std::size_t>(spline_domain_dims[d] + 2);
+
+    std::vector<REAL> coeff_vec(spline_coefficients, spline_coefficients + total_coeffs);
+
+    ND spline(shape, coeff_vec);
+    spline.set_fast_evaluation(flag_fast_evaluate != 0);
+
+    spline.evaluate_regular_grid(output_grid_dims, output_origin, output_step_size, output_values);
+
+    return 0;
+}
+
+
+int calculate_values_regular_grid_natural_bspline_nd_portable(int argc, void* argv[])
+{
+    return calculate_values_regular_grid_natural_bspline_nd(
+        *((int*)argv[0]),
+        (int*)argv[1],
+        (REAL*)argv[2],
+        (int*)argv[3],
+        (REAL*)argv[4],
+        (REAL*)argv[5],
+        *((int*)argv[6]),
+        (REAL*)argv[7]);
 }
 
 

@@ -277,6 +277,16 @@ extern "C" {
         int flag_fast_evaluate,
         REAL* output_values);
 
+    VISIBLE int calculate_values_regular_grid_natural_bspline_nd(
+        int num_dims,
+        const int* spline_domain_dims,
+        const REAL* spline_coefficients,
+        const int* output_grid_dims, 
+        const REAL* output_origin, 
+        const REAL* output_step_size, 
+        int flag_fast_evaluate,
+        REAL* output_values);
+
     VISIBLE int calculate_sizes_natural_bspline_nd(
         int num_dims,
         const int* dims,
@@ -335,6 +345,8 @@ extern "C" {
     VISIBLE int calculate_coefficients_natural_bspline_nd_portable(int argc, void* argv[]);
 
     VISIBLE int calculate_values_natural_bspline_nd_portable(int argc, void* argv[]);
+
+    VISIBLE int calculate_values_regular_grid_natural_bspline_nd_portable(int argc, void* argv[]);
 
     VISIBLE int calculate_sizes_natural_bspline_nd_portable(int argc, void* argv[]);
 

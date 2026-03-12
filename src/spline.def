@@ -44,5 +44,7 @@ EXPORTS
     calculate_coefficients_natural_bspline_nd_portable @42
     calculate_values_natural_bspline_nd @43
     calculate_values_natural_bspline_nd_portable @44
-    calculate_sizes_natural_bspline_nd @45
-    calculate_sizes_natural_bspline_nd_portable @46
+    calculate_values_regular_grid_natural_bspline_nd @45
+    calculate_values_regular_grid_natural_bspline_nd_portable @46
+    calculate_sizes_natural_bspline_nd @47
+    calculate_sizes_natural_bspline_nd_portable @48

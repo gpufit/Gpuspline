@@ -165,6 +165,16 @@ add_executable( splines_tests
     spline_tests.cpp
 )
 
+# ---- OpenMP ----
+find_package(OpenMP)
+
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(splines PRIVATE OpenMP::OpenMP_CXX)
+    target_compile_definitions(splines PRIVATE HAVE_OPENMP=1)
+else()
+    message(STATUS "OpenMP not found - building without OpenMP support")
+endif()
+
 target_include_directories( splines_tests PRIVATE ${PROJECT_SOURCE_DIR} )
 target_link_libraries( splines_tests splines )
 
@@ -233,6 +243,7 @@ set_target_properties(lsq_bspline_tests PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}"
     CXX_VISIBILITY_PRESET hidden
 )
+
 
 # Matlab binding
 
